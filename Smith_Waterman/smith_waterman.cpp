@@ -55,11 +55,6 @@ void score_matrix(
     const int n = strlen(sub_A);
     const int m = strlen(sub_B);
 
-    //We instantiate a 2d vector with default values 0: 
-    int default_value = 0;
-    H = new std::vector<std::vector<int> >(n+1, std::vector<int>(m+1, default_value));
-    traceback_matrix = new std::vector<std::vector<TracebackDirection> >(n+1, std::vector<TracebackDirection>(m+1, TracebackDirection::INVALID));
-
     for (int i = 1; i < n+1; i++){
         for (int j = 1; j < m+1; j++){
             int match_mismatch = (*H)[i-1][j-1] + match_score(sub_A[i-1], sub_B[j-1]);
