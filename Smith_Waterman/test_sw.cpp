@@ -5,7 +5,6 @@ bool test_score_matrix(){
     char* sequence_B = "CGTGAATTCAT";
     int n = strlen(sequence_A);
     int m = strlen(sequence_B);
-<<<<<<< Updated upstream
     std::vector<std::vector<int> > *H;
     std::vector<std::vector<TracebackDirection> > *traceback_matrix;
     AlignmentType at = LOCAL;
@@ -27,15 +26,6 @@ bool test_score_matrix(){
         }
     }
     return true;
-=======
-    std::vector< std::vector<int> > H = score_matrix(sequence_A, sequence_B);
-    vector<vector<int> > vect { {1, 2, 3},
-        {4, 5, 6},
-        {7, 8, 9}
-    };
-    std::vector< std::vector<int> > H_exa;
-    return (H == H_exa);
->>>>>>> Stashed changes
 }
 
 
