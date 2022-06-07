@@ -188,39 +188,28 @@ void print_2d_vector(std::vector< std::vector<int> > H){
 //     return alignment;
 // }
 
-int main(){
+// int main(){
 
-    char* sequence_A = "GACTTAC";
-    char* sequence_B = "CGTGAATTCAT";
+//     char* sequence_A = "GACTTAC";
+//     char* sequence_B = "CGTGAATTCAT";
 
-    int n = strlen(sequence_A);
-    int m = strlen(sequence_B);
+//     int n = strlen(sequence_A);
+//     int m = strlen(sequence_B);
 
-    std::cout << sequence_A << "\n";
-    std::vector< std::vector<int> > H = score_matrix(sequence_A, sequence_B);
+//     std::cout << sequence_A << "\n";
+//     std::vector< std::vector<int> > H = score_matrix(sequence_A, sequence_B);
 
-    // std::vector< std::vector<int> > H_exact = 
-    for (int i = 0; i < H.size(); i++){
-        for (int j = 0; j < H[i].size(); j++){
-        cout << H[i][j] << " ";
-        }
-        cout << std::endl;
-    }
+//     // std::vector< std::vector<int> > H_exact = 
+//     for (int i = 0; i < H.size(); i++){
+//         for (int j = 0; j < H[i].size(); j++){
+//         cout << H[i][j] << " ";
+//         }
+//         cout << std::endl;
+//     }
 
-    int k, l;
-    find_indexes_max_cell(H, k,l);
-    cout << k << l;
+//     int k, l;
+//     find_indexes_max_cell(H, k,l);
+//     cout << k << l;
 
-    return 0;
-    }
-
-int main(){
-
-    char* sequence_A = "AB";
-    char* sequence_B = "BA";
-
-    int n = strlen(sequence_A);
-    int m = strlen(sequence_B);
-    std::cout << sequence_A << "\n";
-
-    }
+//     return 0;
+//     }
