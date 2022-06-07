@@ -28,10 +28,11 @@ int match_score(char a_i, char b_j){
 }
 
 void score_matrix(
-    char *sub_A, 
+
+    char* sub_A, 
     char* sub_B,
-    std::vector<std::vector<int>> *H,
-    std::vector<std::vector<TracebackDirection>> *traceback_matrix, 
+    std::vector<std::vector<int> > *H,
+    std::vector<std::vector<TracebackDirection> > *traceback_matrix, 
     AlignmentType at = AlignmentType::LOCAL
 ) {
     //We compute the score Matrix
@@ -40,8 +41,8 @@ void score_matrix(
 
     //We instantiate a 2d vector with default values 0: 
     int default_value = 0;
-    H = new std::vector<std::vector<int>>(n+1, std::vector<int>(m+1, default_value));
-    traceback_matrix = new std::vector<std::vector<TracebackDirection>>(n+1, std::vector<TracebackDirection>(m+1, TracebackDirection::INVALID));
+    H = new std::vector<std::vector<int> >(n+1, std::vector<int>(m+1, default_value));
+    traceback_matrix = new std::vector<std::vector<TracebackDirection> >(n+1, std::vector<TracebackDirection>(m+1, TracebackDirection::INVALID));
 
     for (int i = 1; i < n+1; i++){
         for (int j = 1; j < m+1; j++){
@@ -179,13 +180,13 @@ void find_indexes_max_cell(std::vector< std::vector<int> > H, int &k, int &l){
 //     return 0;
 //     }
 
-// int main(){
+int main(){
 
-//     char* sequence_A = "AB";
-//     char* sequence_B = "BA";
+    char* sequence_A = "AB";
+    char* sequence_B = "BA";
 
-//     int n = strlen(sequence_A);
-//     int m = strlen(sequence_B);
-//     std::cout << sequence_A << "\n";
+    int n = strlen(sequence_A);
+    int m = strlen(sequence_B);
+    std::cout << sequence_A << "\n";
 
-//     }
+    }
