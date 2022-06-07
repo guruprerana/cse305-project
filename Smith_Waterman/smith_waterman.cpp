@@ -44,10 +44,11 @@ int match_score(char a_i, char b_j){
 }
 
 void score_matrix(
-    char *sub_A, 
+
+    char* sub_A, 
     char* sub_B,
-    std::vector<std::vector<int>> *H,
-    std::vector<std::vector<TracebackDirection>> *traceback_matrix, 
+    std::vector<std::vector<int> > *H,
+    std::vector<std::vector<TracebackDirection> > *traceback_matrix, 
     AlignmentType at = AlignmentType::LOCAL
 ) {
     //We compute the score Matrix
@@ -56,8 +57,8 @@ void score_matrix(
 
     //We instantiate a 2d vector with default values 0: 
     int default_value = 0;
-    H = new std::vector<std::vector<int>>(n+1, std::vector<int>(m+1, default_value));
-    traceback_matrix = new std::vector<std::vector<TracebackDirection>>(n+1, std::vector<TracebackDirection>(m+1, TracebackDirection::INVALID));
+    H = new std::vector<std::vector<int> >(n+1, std::vector<int>(m+1, default_value));
+    traceback_matrix = new std::vector<std::vector<TracebackDirection> >(n+1, std::vector<TracebackDirection>(m+1, TracebackDirection::INVALID));
 
     for (int i = 1; i < n+1; i++){
         for (int j = 1; j < m+1; j++){
@@ -112,6 +113,15 @@ void find_indexes_max_cell(std::vector< std::vector<int> > H, int &k, int &l){
                 l = j;
             }
         }
+    }
+}
+
+void print_2d_vector(std::vector< std::vector<int> > H){
+    for (int i = 0; i < H.size(); i++){
+        for (int j = 0; j < H[i].size(); j++){
+        cout << H[i][j] << " ";
+        }
+        cout << std::endl;
     }
 }
 
@@ -178,39 +188,39 @@ void find_indexes_max_cell(std::vector< std::vector<int> > H, int &k, int &l){
 //     return alignment;
 // }
 
-// int main(){
+int main(){
 
-//     char* sequence_A = "GACTTAC";
-//     char* sequence_B = "CGTGAATTCAT";
+    char* sequence_A = "GACTTAC";
+    char* sequence_B = "CGTGAATTCAT";
 
-//     int n = strlen(sequence_A);
-//     int m = strlen(sequence_B);
+    int n = strlen(sequence_A);
+    int m = strlen(sequence_B);
 
-//     std::cout << sequence_A << "\n";
-//     std::vector< std::vector<int> > H = score_matrix(sequence_A, sequence_B);
+    std::cout << sequence_A << "\n";
+    std::vector< std::vector<int> > H = score_matrix(sequence_A, sequence_B);
 
-//     // std::vector< std::vector<int> > H_exact = 
-//     for (int i = 0; i < H.size(); i++){
-//         for (int j = 0; j < H[i].size(); j++){
-//         cout << H[i][j] << " ";
-//         }
-//         cout << std::endl;
-//     }
+    // std::vector< std::vector<int> > H_exact = 
+    for (int i = 0; i < H.size(); i++){
+        for (int j = 0; j < H[i].size(); j++){
+        cout << H[i][j] << " ";
+        }
+        cout << std::endl;
+    }
 
-//     int k, l;
-//     find_indexes_max_cell(H, k,l);
-//     cout << k << l;
+    int k, l;
+    find_indexes_max_cell(H, k,l);
+    cout << k << l;
 
-//     return 0;
-//     }
+    return 0;
+    }
 
-// int main(){
+int main(){
 
-//     char* sequence_A = "AB";
-//     char* sequence_B = "BA";
+    char* sequence_A = "AB";
+    char* sequence_B = "BA";
 
-//     int n = strlen(sequence_A);
-//     int m = strlen(sequence_B);
-//     std::cout << sequence_A << "\n";
+    int n = strlen(sequence_A);
+    int m = strlen(sequence_B);
+    std::cout << sequence_A << "\n";
 
-//     }
+    }

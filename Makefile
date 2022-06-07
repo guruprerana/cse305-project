@@ -1,5 +1,5 @@
 CXX = g++
-CFLAGS = -pthread -std=c++17 -Wall
+CFLAGS = -pthread -std=c++11 -Wall
 
 SOURCES = Myers_Millers/mm.cpp Smith_Waterman/smith_waterman.cpp Smith_Waterman/test_sw.cpp
 OBJECTS = $(SOURCES:.cpp=.o)
