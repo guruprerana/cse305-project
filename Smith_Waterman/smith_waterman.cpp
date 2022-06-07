@@ -1,9 +1,22 @@
 #include <iostream>
 #include <vector>
 #include <algorithm>
+#include <cstring>
 using namespace std;
 
 #define G   4 //penalty associated to an indel (insertion or deletion)
+
+enum TracebackDirection {
+    MATCH,
+    INSERTION,
+    DELETION,
+    INVALID
+};
+
+enum AlignmentType {
+    LOCAL,
+    GLOBAL
+};
 
 int match_score(char a_i, char b_j){
     if (a_i == b_j){
@@ -14,26 +27,53 @@ int match_score(char a_i, char b_j){
     }
 }
 
-std::vector< std::vector<int> > score_matrix(char *sub_A, char* sub_B){
-//We compute the score Matrix
+void score_matrix(
+    char *sub_A, 
+    char* sub_B,
+    std::vector<std::vector<int>> *H,
+    std::vector<std::vector<TracebackDirection>> *traceback_matrix, 
+    AlignmentType at = AlignmentType::LOCAL
+) {
+    //We compute the score Matrix
     const int n = strlen(sub_A);
     const int m = strlen(sub_B);
 
     //We instantiate a 2d vector with default values 0: 
     int default_value = 0;
-    std::vector< std::vector<int> > H(n+1, std::vector<int>(m+1, default_value));
+    H = new std::vector<std::vector<int>>(n+1, std::vector<int>(m+1, default_value));
+    traceback_matrix = new std::vector<std::vector<TracebackDirection>>(n+1, std::vector<TracebackDirection>(m+1, TracebackDirection::INVALID));
 
     for (int i = 1; i < n+1; i++){
         for (int j = 1; j < m+1; j++){
-            int match_mismatch = H[i-1][j-1] + match_score(sub_A[i-1], sub_B[j-1]);
-            int deletion = H[i-1][j] - G;
-            int insertion = H[i][j-1] - G;
-            int max_1 = std::max(0, match_mismatch); //O for empty alignment
-            int max_2 = std::max(deletion, insertion);
-            H[i][j] = std::max(max_1, max_2); 
+            int match_mismatch = (*H)[i-1][j-1] + match_score(sub_A[i-1], sub_B[j-1]);
+            int deletion = (*H)[i-1][j] - G;
+            int insertion = (*H)[i][j-1] - G;
+
+            int score_ij;
+            TracebackDirection dir;
+
+            if (at == AlignmentType::LOCAL) {
+                score_ij = std::max({0, match_mismatch, deletion, insertion});
+            } else {
+                score_ij = std::max({match_mismatch, deletion, insertion});
+            }
+
+            if (score_ij == 0 && at == AlignmentType::LOCAL) {
+                dir = TracebackDirection::INVALID;
+            } else if (score_ij == match_mismatch) {
+                dir = TracebackDirection::MATCH;
+            } else if (score_ij == deletion) {
+                dir = TracebackDirection::DELETION;
+            } else if (score_ij == insertion) {
+                dir = TracebackDirection::INSERTION;
+            } else {
+                dir = TracebackDirection::INVALID;
+            }
+
+            (*H)[i][j] = score_ij;
+            (*traceback_matrix)[i][j] = dir;
         }
     }
-    return H;
 }
 
 void find_indexes_max_cell(std::vector< std::vector<int> > H, int &k, int &l){
