@@ -2,6 +2,7 @@
 #include <vector>
 #include <algorithm>
 #include <cstring>
+#include <limits>
 using namespace std;
 
 #define G   4 //penalty associated to an indel (insertion or deletion)
@@ -17,6 +18,21 @@ enum AlignmentType {
     LOCAL,
     GLOBAL
 };
+
+int max_vector(std::vector<int> ints) {
+    if (ints.size() == 0) {
+        return std::numeric_limits<int>::min();
+    }
+
+    int max = ints[0];
+    for (auto it = ints.begin(); it != ints.end(); ++it) {
+        if (*it > max) {
+            max = *it;
+        }
+    }
+
+    return max;
+}
 
 int match_score(char a_i, char b_j){
     if (a_i == b_j){
@@ -54,9 +70,9 @@ void score_matrix(
             TracebackDirection dir;
 
             if (at == AlignmentType::LOCAL) {
-                score_ij = std::max({0, match_mismatch, deletion, insertion});
+                score_ij = max_vector(std::vector<int>({0, match_mismatch, deletion, insertion}));
             } else {
-                score_ij = std::max({match_mismatch, deletion, insertion});
+                score_ij = max_vector(std::vector<int>({match_mismatch, deletion, insertion}));
             }
 
             if (score_ij == 0 && at == AlignmentType::LOCAL) {
