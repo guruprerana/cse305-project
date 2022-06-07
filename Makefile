@@ -4,15 +4,6 @@ CFLAGS = -pthread -std=c++17 -Wall
 SOURCES = Myers_Millers/mm.cpp Smith_Waterman/smith_waterman.cpp Smith_Waterman/test_sw.cpp
 OBJECTS = $(SOURCES:.cpp=.o)
 
-grader: $(OBJECTS)
-	$(CXX) $(CFLAGS) -o grader $(OBJECTS) -latomic 
-
-gradinglib.o: gradinglib/gradinglib.cpp gradinglib/gradinglib.hpp
-	$(CXX) -c $(CFLAGS) -o gradinglib.o gradinglib/gradinglib.cpp
-
-grading.o: grading/grading.cpp gradinglib/gradinglib.hpp td7.cpp
-	$(CXX) -c $(CFLAGS) -o grading.o grading/grading.cpp -I.
-
 main.o: main.cpp grading/grading.hpp
 	$(CXX) -c $(CFLAGS) -o main.o main.cpp
 
