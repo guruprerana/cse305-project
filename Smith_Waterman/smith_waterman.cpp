@@ -91,6 +91,15 @@ void find_indexes_max_cell(std::vector< std::vector<int> > H, int &k, int &l){
     }
 }
 
+void print_2d_vector(std::vector< std::vector<int> > H){
+    for (int i = 0; i < H.size(); i++){
+        for (int j = 0; j < H[i].size(); j++){
+        cout << H[i][j] << " ";
+        }
+        cout << std::endl;
+    }
+}
+
 // int find_best_cell(std::vector< std::vector<int> > H, int &best_i, int &best_j, int current_i, int current_j){
 //     //We find the best cell : we return 0 if it is the diagonal one, 1 if it is the left one and 2 if it is the top one.
 //     //We also store the indices best_i, best_j in the referenced arguments
@@ -154,31 +163,31 @@ void find_indexes_max_cell(std::vector< std::vector<int> > H, int &k, int &l){
 //     return alignment;
 // }
 
-// int main(){
+int main(){
 
-//     char* sequence_A = "GACTTAC";
-//     char* sequence_B = "CGTGAATTCAT";
+    char* sequence_A = "GACTTAC";
+    char* sequence_B = "CGTGAATTCAT";
 
-//     int n = strlen(sequence_A);
-//     int m = strlen(sequence_B);
+    int n = strlen(sequence_A);
+    int m = strlen(sequence_B);
 
-//     std::cout << sequence_A << "\n";
-//     std::vector< std::vector<int> > H = score_matrix(sequence_A, sequence_B);
+    std::cout << sequence_A << "\n";
+    std::vector< std::vector<int> > H = score_matrix(sequence_A, sequence_B);
 
-//     // std::vector< std::vector<int> > H_exact = 
-//     for (int i = 0; i < H.size(); i++){
-//         for (int j = 0; j < H[i].size(); j++){
-//         cout << H[i][j] << " ";
-//         }
-//         cout << std::endl;
-//     }
+    // std::vector< std::vector<int> > H_exact = 
+    for (int i = 0; i < H.size(); i++){
+        for (int j = 0; j < H[i].size(); j++){
+        cout << H[i][j] << " ";
+        }
+        cout << std::endl;
+    }
 
-//     int k, l;
-//     find_indexes_max_cell(H, k,l);
-//     cout << k << l;
+    int k, l;
+    find_indexes_max_cell(H, k,l);
+    cout << k << l;
 
-//     return 0;
-//     }
+    return 0;
+    }
 
 int main(){
 
