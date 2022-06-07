@@ -69,9 +69,18 @@ void score_matrix(
             TracebackDirection dir;
 
             if (at == AlignmentType::LOCAL) {
-                score_ij = max_vector(std::vector<int>({0, match_mismatch, deletion, insertion}));
+                std::vector<int> max_v;
+                max_v.push_back(0);
+                max_v.push_back(match_mismatch);
+                max_v.push_back(deletion);
+                max_v.push_back(insertion);
+                score_ij = max_vector(max_v);
             } else {
-                score_ij = max_vector(std::vector<int>({match_mismatch, deletion, insertion}));
+                std::vector<int> max_v;
+                max_v.push_back(match_mismatch);
+                max_v.push_back(deletion);
+                max_v.push_back(insertion);
+                score_ij = max_vector(max_v);
             }
 
             if (score_ij == 0 && at == AlignmentType::LOCAL) {
