@@ -42,15 +42,59 @@
 // }
 
 bool test_cells_in_sequence_alignment(){
-    char* sequence_A = "GACTTAC";
-    char* sequence_B = "CGTGAATTCAT";
+    char* sequence_A = "GACTTACTA";
+    char* sequence_B = "CGTGAATTC";
     
     SequenceAlignment s_a(sequence_A, sequence_B, 3, 1, 1, 2, 3, -5);
-    std::vector<Block> blocks;
-    s_a.cells(7, blocks);
+    std::vector<Block> blocks_thread1_phase7;
+    s_a.phase = 7;
+    s_a.cells(1, blocks_thread1_phase7);
 
-    for (int i = 0; i < blocks.size(); i++){
-        std::cout << blocks[i].startX << blocks[i].startY;
+    std::vector<Block> expected_blocks_thread1_phase7;
+    Block block1, block2, block3;
+    block1.startX = 1;
+    block1.startY = 7;
+    block2.startX = 4;
+    block2.startY = 4;
+    block3.startX = 7;
+    block3.startY = 1;
+    expected_blocks_thread1_phase7.push_back(block1);
+    expected_blocks_thread1_phase7.push_back(block2);
+    expected_blocks_thread1_phase7.push_back(block3);
+
+
+    for (int i = 0; i < blocks_thread1_phase7.size(); i++){
+        bool test_1 = (blocks_thread1_phase7[i].startX == expected_blocks_thread1_phase7[i].startX);
+        bool test_2 = (blocks_thread1_phase7[i].startY == expected_blocks_thread1_phase7[i].startY);
+        if (!(test_1 and test_2)){
+            return false;
+        }
+    }
+
+    SequenceAlignment s_a(sequence_A, sequence_B, 3, 1, 1, 2, 3, -5);
+    std::vector<Block> blocks_thread1_phase7;
+    s_a.phase = 7;
+    s_a.cells(1, blocks_thread1_phase7);
+
+    std::vector<Block> expected_blocks_thread3_phase11;
+    Block block1, block2, block3;
+    block1.startX = 1;
+    block1.startY = 7;
+    block2.startX = 4;
+    block2.startY = 4;
+    block3.startX = 7;
+    block3.startY = 1;
+    expected_blocks_thread1_phase7.push_back(block1);
+    expected_blocks_thread1_phase7.push_back(block2);
+    expected_blocks_thread1_phase7.push_back(block3);
+
+
+    for (int i = 0; i < blocks_thread1_phase7.size(); i++){
+        bool test_1 = (blocks_thread1_phase7[i].startX == expected_blocks_thread1_phase7[i].startX);
+        bool test_2 = (blocks_thread1_phase7[i].startY == expected_blocks_thread1_phase7[i].startY);
+        if (!(test_1 and test_2)){
+            return false;
+        }
     }
     return true;
 }
@@ -61,13 +105,9 @@ int main(){
     //     cout << "Test 1 passed!" << endl;
     // }
 
-    test_cells_in_sequence_alignment();
+    if (test_cells_in_sequence_alignment()){
+        std::cout << "Test 2 passed!" << "\n";
+    }
 
-    // for (int i = 0; i < H.size(); i++){
-    //     for (int j = 0; j < H[i].size(); j++){
-    //     cout << H[i][j];
-    //     }
-    //     cout << std::endl;
-    // }
     return 0;
     }

@@ -138,7 +138,7 @@ public:
         (*traceback_matrix)[i][j] = dir;
     }
 
-    void cells(unsigned int processor_id, std::vector<Block> &blocks, int phase) {
+    void cells(unsigned int processor_id, std::vector<Block> &blocks) {
         //This function returns 
         //Careful : to account for the first line of zeros and first columns of 
         //Zeros
@@ -150,7 +150,7 @@ public:
             std::cout << "i = " << i << "\n";
             int it = i/num_threads*block_size_x;
             std::cout << "it = " << it << "\n";
-            int j = 1 + (phase - 1 - it*num_threads) * block_size_y;
+            int j = 1 + (phase.load() - 1 - it*num_threads) * block_size_y;
             std::cout << "j = " << j << "\n";
             Block new_block;
             new_block.startX = i;
