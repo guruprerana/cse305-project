@@ -65,13 +65,14 @@ public:
 
     SequenceAlignment(
         char *A, char *B, 
+        unsigned int lenA, unsigned int lenB,
         unsigned int num_threads, unsigned int block_size_x, unsigned int block_size_y,
         int gap_penalty, int match_score, int mismatch_score, AlignmentType at = AlignmentType::LOCAL) {
         
         this->A = A;
         this->B = B;
-        this->lenA = strlen(A);
-        this->lenB = strlen(B);
+        this->lenA = lenA;
+        this->lenB = lenB;
         this->num_threads = num_threads;
         this->block_size_x = block_size_x;
         this->block_size_y = block_size_y;
@@ -89,7 +90,7 @@ public:
         );
 
         std::atomic_init(&num_threads_finished, 0);
-        std::atomic_init(&phase, 0);
+        std::atomic_init(&phase, 1);
 
         if (lenA % block_size_x == 0)
             n_blocks_A = lenA / block_size_x;
@@ -118,15 +119,15 @@ public:
     }
 
     void compute_score_matrix() {
-        for (unsigned int i = 0; i < num_threads; ++i) {
-            threads.push_back(std::thread(&SequenceAlignment::processor_compute, this));
-            mutexes.push_back(std::mutex());
-        }
+        // for (unsigned int i = 0; i < num_threads; ++i) {
+        //     threads.push_back(std::thread(SequenceAlignment::processor_compute, this));
+        //     mutexes.push_back(std::mutex());
+        // }
 
-        for (unsigned int i = 0; i < num_threads; ++i) {
-            if (threads[i].joinable())
-                threads[i].join();
-        }
+        // for (unsigned int i = 0; i < num_threads; ++i) {
+        //     if (threads[i].joinable())
+        //         threads[i].join();
+        // }
     }
 
     void processor_compute(unsigned int processor_id) {
@@ -203,12 +204,32 @@ public:
             std::cout << "Invalid : processor_id is greater than the number of threads.\n";
             return;
         }
-        for (int i = processor_id; i < lenA + 1; i += (num_threads*block_size_x)){
-            std::cout << "i = " << i << "\n";
-            int it = i/num_threads*block_size_x;
-            std::cout << "it = " << it << "\n";
-            int j = 1 + (phase.load() - 1 - it*num_threads) * block_size_y;
-            std::cout << "j = " << j << "\n";
+        // for (int i = (processor_id-1)*block_size_x; i < lenA + 1; i += (num_threads*block_size_x)){
+        //     //std::cout << "i = " << i << "\n";
+        //     int it = i/(num_threads*block_size_x);
+        //     //std::cout << "it = " << it << "\n";
+        //     int j = 1 + (phase.load() - 1 - it*num_threads) * block_size_y;
+        //     //std::cout << "j = " << j << "\n";
+        //     Block new_block;
+        //     new_block.startX = i;
+        //     new_block.startY = j;
+        //     blocks.push_back(new_block);
+        // }
+
+        int i = 1 + (processor_id - 1) * block_size_x;
+        int j = 1 + (phase.load() - 1 - processor_id + 1) * block_size_y;
+
+        while (i < lenA + 1 && j >= 1) {
+            Block new_block;
+            new_block.startX = i;
+            new_block.startY = j;
+            blocks.push_back(new_block);
+
+            i += num_threads * block_size_x;
+            j -= num_threads * block_size_y;
+        }
+
+        if (i < lenA + 1 && j >= 1) {
             Block new_block;
             new_block.startX = i;
             new_block.startY = j;

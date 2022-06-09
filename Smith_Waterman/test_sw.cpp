@@ -45,7 +45,7 @@ bool test_cells_in_sequence_alignment(){
     char* sequence_A = "GACTTACTA";
     char* sequence_B = "CGTGAATTC";
     
-    SequenceAlignment s_a(sequence_A, sequence_B, 3, 1, 1, 2, 3, -5);
+    SequenceAlignment s_a(sequence_A, sequence_B, 9, 9, 3, 1, 1, 2, 3, -5);
     std::vector<Block> blocks_thread1_phase7;
     s_a.phase = 7;
     s_a.cells(1, blocks_thread1_phase7);
@@ -70,28 +70,32 @@ bool test_cells_in_sequence_alignment(){
             return false;
         }
     }
+    return true;
+}
 
-    SequenceAlignment s_a(sequence_A, sequence_B, 3, 1, 1, 2, 3, -5);
-    std::vector<Block> blocks_thread1_phase7;
-    s_a.phase = 7;
-    s_a.cells(1, blocks_thread1_phase7);
+bool test_cells_in_sequence_alignment2() {
+    char* sequence_A = "GACTTACTA";
+    char* sequence_B = "CGTGAATTC";
 
-    std::vector<Block> expected_blocks_thread3_phase11;
-    Block block1, block2, block3;
-    block1.startX = 1;
-    block1.startY = 7;
-    block2.startX = 4;
-    block2.startY = 4;
-    block3.startX = 7;
-    block3.startY = 1;
-    expected_blocks_thread1_phase7.push_back(block1);
-    expected_blocks_thread1_phase7.push_back(block2);
-    expected_blocks_thread1_phase7.push_back(block3);
+    SequenceAlignment s_a2(sequence_A, sequence_B, 2000, 2000, 4, 3, 5, 2, 3, -5);
+    std::vector<Block> blocks_thread2_phase7;
+    s_a2.phase = 7;
+    s_a2.cells(2, blocks_thread2_phase7);
+
+    std::vector<Block> expected_blocks_thread2_phase7;
+    Block block1, block2;
+    block1.startX = 4;
+    block1.startY = 26;
+    block2.startX = 16;
+    block2.startY = 6;
+    expected_blocks_thread2_phase7.push_back(block1);
+    expected_blocks_thread2_phase7.push_back(block2);
 
 
-    for (int i = 0; i < blocks_thread1_phase7.size(); i++){
-        bool test_1 = (blocks_thread1_phase7[i].startX == expected_blocks_thread1_phase7[i].startX);
-        bool test_2 = (blocks_thread1_phase7[i].startY == expected_blocks_thread1_phase7[i].startY);
+    for (int i = 0; i < blocks_thread2_phase7.size(); i++){
+        std::cout << blocks_thread2_phase7[i].startX << " " << blocks_thread2_phase7[i].startY << std::endl;
+        bool test_1 = (blocks_thread2_phase7[i].startX == expected_blocks_thread2_phase7[i].startX);
+        bool test_2 = (blocks_thread2_phase7[i].startY == expected_blocks_thread2_phase7[i].startY);
         if (!(test_1 and test_2)){
             return false;
         }
@@ -107,6 +111,10 @@ int main(){
 
     if (test_cells_in_sequence_alignment()){
         std::cout << "Test 2 passed!" << "\n";
+    }
+
+    if (test_cells_in_sequence_alignment2()){
+        std::cout << "Test 3 passed!" << "\n";
     }
 
     return 0;
