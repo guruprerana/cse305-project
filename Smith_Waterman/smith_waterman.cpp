@@ -23,7 +23,6 @@ int max_vector(std::vector<int> ints) {
     if (ints.size() == 0) {
         return std::numeric_limits<int>::min();
     }
-    std::vector<int> a({3,4,5});
 
     int max = ints[0];
     for (auto it = ints.begin(); it != ints.end(); ++it) {
