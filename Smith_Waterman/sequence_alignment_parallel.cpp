@@ -8,36 +8,7 @@
 #include <condition_variable>
 #include <atomic>
 
-int max_vector(std::vector<int> ints) {
-    if (ints.size() == 0) {
-        return std::numeric_limits<int>::min();
-    }
-
-    int max = ints[0];
-    for (auto it = ints.begin(); it != ints.end(); ++it) {
-        if (*it > max) {
-            max = *it;
-        }
-    }
-
-    return max;
-}
-
-enum TracebackDirection {
-    MATCH,
-    INSERTION,
-    DELETION,
-    INVALID
-};
-
-enum AlignmentType {
-    LOCAL,
-    GLOBAL
-};
-
-struct Block {
-    unsigned int startX, startY;
-};
+#include "sequence_alignment.cpp"
 
 class SequenceAlignment {
 public:
@@ -237,5 +208,24 @@ public:
         }
     }
 
-    void print_alignment() {}
+    void print_alignment(int i, int j, char & align_a, char & align_b){
+        if (*H[i][j] == 0){
+            return;
+        }
+        else{
+            if (*traceback_matrix[i][j] == TracebackDirection::MATCH){
+                align_a.push_back(this->A[i-1]);
+                align_b.push_back(this->B[j-1]);
+            }
+            else if (*this->traceback_matrix[i][j] == TracebackDirection::DELETION){
+                align_a.push_back('-');
+                align_b.push_back(this->B[j-1]);
+            }
+            else (*this->traceback_matrix[i][j] == TracebackDirection::INSERTION){
+                align_a.push_back(this->A[i-1]);
+                align_b.push_back('-');
+            }
+            print_alignment(i-1, j-1, align_a, align_b);
+        }
+    }
 };
