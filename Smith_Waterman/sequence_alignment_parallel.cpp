@@ -57,7 +57,7 @@ public:
 
     std::vector<std::thread> threads;
     std::mutex *mutexes;
-    std::condition_variable cv;
+    std::condition_variable *cvs;
 
     std::atomic_int num_threads_finished;
     std::atomic_int phase;
@@ -75,6 +75,7 @@ public:
         this->lenB = lenB;
         this->num_threads = num_threads;
         mutexes = new std::mutex[num_threads];
+        cvs = new std::condition_variable[num_threads];
         this->block_size_x = block_size_x;
         this->block_size_y = block_size_y;
         this->gap_penalty = gap_penalty;
@@ -103,13 +104,14 @@ public:
         else
             n_blocks_B = (lenB / block_size_y) + 1;
 
-        int num_phases = n_blocks_A + n_blocks_B - 1; // to be computed based on m, n, block_size
+        num_phases = n_blocks_A + n_blocks_B - 1; // to be computed based on m, n, block_size
     }
 
     ~SequenceAlignment() {
         delete H;
         delete traceback_matrix;
         delete mutexes;
+        //delete cvs;
     }
 
     int compute_match_score(char a_i, char b_j) {
@@ -132,9 +134,10 @@ public:
     }
 
     void processor_compute(unsigned int processor_id) {
-        while (phase.load() < num_phases) {
+        unsigned int local_phase = 1;
+        while (local_phase <= num_phases) {
             std::vector<Block> blocks_to_compute;
-            cells(processor_id, blocks_to_compute);
+            cells(processor_id, blocks_to_compute, local_phase);
 
             for (auto b = blocks_to_compute.begin(); b != blocks_to_compute.end(); ++b) {
                 Block block = *b;
@@ -145,14 +148,21 @@ public:
                 }
             }
 
-            num_threads_finished.fetch_add(1);
-            if (num_threads_finished.load() >= num_threads) {
-                cv.notify_all();
+            local_phase++;
+            int fetched = num_threads_finished.fetch_add(1);
+            if (fetched == num_threads - 1) {
+                int current_val = fetched + 1;
+                while (!num_threads_finished.compare_exchange_weak(current_val, 0));
+                phase.fetch_add(1);
+                
+                for (unsigned int i = 0; i < num_threads; i++) {
+                    cvs[i].notify_one();
+                }
                 continue;
             }
-            std::unique_lock<std::mutex> lk(mutexes[processor_id]);
-            while (num_threads_finished.load() < num_threads)
-                cv.wait(lk);
+            std::unique_lock<std::mutex> lk(mutexes[processor_id - 1]);
+            while (phase != local_phase)
+                cvs[processor_id - 1].wait(lk);
         }
     }
 
@@ -197,7 +207,7 @@ public:
         (*traceback_matrix)[i][j] = dir;
     }
 
-    void cells(unsigned int processor_id, std::vector<Block> &blocks) {
+    void cells(unsigned int processor_id, std::vector<Block> &blocks, unsigned int phase) {
         //This function returns 
         //Careful : to account for the first line of zeros and first columns of 
         //Zeros
@@ -218,7 +228,7 @@ public:
         // }
 
         int i = 1 + (processor_id - 1) * block_size_x;
-        int j = 1 + (phase.load() - 1 - processor_id + 1) * block_size_y;
+        int j = 1 + (phase - 1 - processor_id + 1) * block_size_y;
 
         while (i < lenA + 1 && j >= 1) {
             Block new_block;

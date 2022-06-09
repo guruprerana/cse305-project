@@ -48,7 +48,7 @@ bool test_cells_in_sequence_alignment(){
     SequenceAlignment s_a(sequence_A, sequence_B, 9, 9, 3, 1, 1, 2, 3, -5);
     std::vector<Block> blocks_thread1_phase7;
     s_a.phase = 7;
-    s_a.cells(1, blocks_thread1_phase7);
+    s_a.cells(1, blocks_thread1_phase7, 7);
 
     std::vector<Block> expected_blocks_thread1_phase7;
     Block block1, block2, block3;
@@ -80,7 +80,7 @@ bool test_cells_in_sequence_alignment2() {
     SequenceAlignment s_a2(sequence_A, sequence_B, 2000, 2000, 4, 3, 5, 2, 3, -5);
     std::vector<Block> blocks_thread2_phase7;
     s_a2.phase = 7;
-    s_a2.cells(2, blocks_thread2_phase7);
+    s_a2.cells(2, blocks_thread2_phase7, 7);
 
     std::vector<Block> expected_blocks_thread2_phase7;
     Block block1, block2;
@@ -103,6 +103,20 @@ bool test_cells_in_sequence_alignment2() {
     return true;
 }
 
+bool test_parallel_sequence_alignment() {
+    char* A = "GACTTACTA";
+    char* B = "CGTGAATTC";
+
+    SequenceAlignment sa(A, B, 9, 9, 3, 3, 3, 2, 3, -5, AlignmentType::GLOBAL);
+    sa.compute_score_matrix();
+    // for (int i = 0; i < 10; i++) {
+    //     for (int j = 0; j < 10; j++) {
+    //         std::cout << (*(sa.H))[i][j] << " ";
+    //     }
+    //     std::cout << std::endl;
+    // }    
+}
+
 int main(){
 
     // if (test_score_matrix()){
@@ -116,6 +130,8 @@ int main(){
     if (test_cells_in_sequence_alignment2()){
         std::cout << "Test 3 passed!" << "\n";
     }
+
+    test_parallel_sequence_alignment();
 
     return 0;
     }
