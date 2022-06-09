@@ -51,7 +51,7 @@ public:
 
     AlignmentType at;
 
-    std::vector<std::vector<int>> *H;
+    std::vector<std::vector<int> > *H;
     std::vector<std::vector<TracebackDirection> > *traceback_matrix;
 
     std::vector<std::thread> threads;
@@ -79,8 +79,8 @@ public:
 
         //We instantiate a 2d vector with default values 0: 
         int default_value = 0;
-        H = new std::vector<std::vector<int>>(lenA+1, std::vector<int>(lenB+1, default_value));
-        traceback_matrix = new std::vector<std::vector<TracebackDirection>>(lenA+1, std::vector<TracebackDirection>(lenB+1, TracebackDirection::INVALID));
+        H = new std::vector<std::vector<int> >(lenA+1, std::vector<int>(lenB+1, default_value));
+        traceback_matrix = new std::vector<std::vector<TracebackDirection> >(lenA+1, std::vector<TracebackDirection>(lenB+1, TracebackDirection::INVALID));
 
         std::atomic_init(&phase, 0);
     }
@@ -138,7 +138,19 @@ public:
         (*traceback_matrix)[i][j] = dir;
     }
 
-    void cells(unsigned int processor_id, std::vector<Block> &blocks) {}
+    void cells(unsigned int processor_id, std::vector<Block> &blocks) {
+        //This function returns 
+        //Careful : to account for the first line of zeros and first columns of 
+        //Zeros
+        for (int i = processor_id; i < lenA + 1; i += (num_threads*block_size_x)){
+            int j = (this->phase.load()+ 1 - i) * (block_size_y-1);
+            Block new_block;
+            new_block.startX = i;
+            new_block.startY = j;
+            blocks.push_back(new_block);
+        }
+    
+    }
 
     void print_alignment() {}
 };

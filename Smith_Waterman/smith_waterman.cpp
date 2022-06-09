@@ -3,36 +3,12 @@
 #include <algorithm>
 #include <cstring>
 #include <limits>
+#include "sequence_alignment_parallel.cpp"
+
 using namespace std;
 
 #define G   4 //penalty associated to an indel (insertion or deletion)
 
-enum TracebackDirection {
-    MATCH,
-    INSERTION,
-    DELETION,
-    INVALID
-};
-
-enum AlignmentType {
-    LOCAL,
-    GLOBAL
-};
-
-int max_vector(std::vector<int> ints) {
-    if (ints.size() == 0) {
-        return std::numeric_limits<int>::min();
-    }
-
-    int max = ints[0];
-    for (auto it = ints.begin(); it != ints.end(); ++it) {
-        if (*it > max) {
-            max = *it;
-        }
-    }
-
-    return max;
-}
 
 int match_score(char a_i, char b_j){
     if (a_i == b_j){
