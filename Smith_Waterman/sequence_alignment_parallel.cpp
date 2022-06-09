@@ -27,7 +27,7 @@ public:
     std::vector<std::vector<TracebackDirection> > *traceback_matrix;
 
     std::vector<std::thread> threads;
-    std::vector<std::mutex> mutexes;
+    std::mutex *mutexes;
     std::condition_variable cv;
 
     std::atomic_int num_threads_finished;
@@ -45,6 +45,7 @@ public:
         this->lenA = lenA;
         this->lenB = lenB;
         this->num_threads = num_threads;
+        mutexes = new std::mutex[num_threads];
         this->block_size_x = block_size_x;
         this->block_size_y = block_size_y;
         this->gap_penalty = gap_penalty;
@@ -79,6 +80,7 @@ public:
     ~SequenceAlignment() {
         delete H;
         delete traceback_matrix;
+        delete mutexes;
     }
 
     int compute_match_score(char a_i, char b_j) {
@@ -90,15 +92,14 @@ public:
     }
 
     void compute_score_matrix() {
-        // for (unsigned int i = 0; i < num_threads; ++i) {
-        //     threads.push_back(std::thread(SequenceAlignment::processor_compute, this));
-        //     mutexes.push_back(std::mutex());
-        // }
+        for (unsigned int i = 0; i < num_threads; ++i) {
+            threads.push_back(std::thread(&SequenceAlignment::processor_compute, this, i+1));
+        }
 
-        // for (unsigned int i = 0; i < num_threads; ++i) {
-        //     if (threads[i].joinable())
-        //         threads[i].join();
-        // }
+        for (unsigned int i = 0; i < num_threads; ++i) {
+            if (threads[i].joinable())
+                threads[i].join();
+        }
     }
 
     void processor_compute(unsigned int processor_id) {
@@ -130,8 +131,8 @@ public:
         // add safety bounds on i and j
 
         int match_mismatch = (*H)[i-1][j-1] + compute_match_score(A[i-1], B[j-1]);
-        int deletion = (*H)[i-1][j] - gap_penalty;
-        int insertion = (*H)[i][j-1] - gap_penalty;
+        int insertion = (*H)[i-1][j] - gap_penalty;
+        int deletion = (*H)[i][j-1] - gap_penalty;
 
         int score_ij;
         TracebackDirection dir;
