@@ -46,6 +46,7 @@ public:
     unsigned int lenA, lenB;
 
     unsigned int num_threads, block_size_x, block_size_y;
+    unsigned int n_blocks_A, n_blocks_B;
 
     int gap_penalty, match_score, mismatch_score;
 
@@ -55,10 +56,12 @@ public:
     std::vector<std::vector<TracebackDirection> > *traceback_matrix;
 
     std::vector<std::thread> threads;
-    std::mutex mutex;
+    std::vector<std::mutex> mutexes;
     std::condition_variable cv;
 
+    std::atomic_int num_threads_finished;
     std::atomic_int phase;
+    unsigned int num_phases;
 
     SequenceAlignment(
         char *A, char *B, 
@@ -79,10 +82,31 @@ public:
 
         //We instantiate a 2d vector with default values 0: 
         int default_value = 0;
-        H = new std::vector<std::vector<int> >(lenA+1, std::vector<int>(lenB+1, default_value));
-        traceback_matrix = new std::vector<std::vector<TracebackDirection> >(lenA+1, std::vector<TracebackDirection>(lenB+1, TracebackDirection::INVALID));
+        H = new std::vector<std::vector<int>>(lenA+1, std::vector<int>(lenB+1, default_value));
+        traceback_matrix = new std::vector<std::vector<TracebackDirection>>(
+            lenA+1, 
+            std::vector<TracebackDirection>(lenB+1, TracebackDirection::INVALID)
+        );
 
+        std::atomic_init(&num_threads_finished, 0);
         std::atomic_init(&phase, 0);
+
+        if (lenA % block_size_x == 0)
+            n_blocks_A = lenA / block_size_x;
+        else
+            n_blocks_A = (lenA / block_size_x) + 1;
+
+        if (lenB % block_size_y == 0)
+            n_blocks_B = lenB / block_size_y;
+        else
+            n_blocks_B = (lenB / block_size_y) + 1;
+
+        int num_phases = n_blocks_A + n_blocks_B - 1; // to be computed based on m, n, block_size
+    }
+
+    ~SequenceAlignment() {
+        delete H;
+        delete traceback_matrix;
     }
 
     int compute_match_score(char a_i, char b_j) {
@@ -93,9 +117,42 @@ public:
         }
     }
 
-    void compute_score_matrix() {}
+    void compute_score_matrix() {
+        for (unsigned int i = 0; i < num_threads; ++i) {
+            threads.push_back(std::thread(&SequenceAlignment::processor_compute, this));
+            mutexes.push_back(std::mutex());
+        }
 
-    void processor_compute(unsigned int processor_id) {}
+        for (unsigned int i = 0; i < num_threads; ++i) {
+            if (threads[i].joinable())
+                threads[i].join();
+        }
+    }
+
+    void processor_compute(unsigned int processor_id) {
+        while (phase.load() < num_phases) {
+            std::vector<Block> blocks_to_compute;
+            cells(processor_id, blocks_to_compute);
+
+            for (auto b = blocks_to_compute.begin(); b != blocks_to_compute.end(); ++b) {
+                Block block = *b;
+                for (unsigned int i = block.startX; i < std::min(block.startX + block_size_x, lenA + 1); ++i) {
+                    for (unsigned int j = block.startY; j < std::min(block.startY + block_size_y, lenB + 1); ++j) {
+                        compute_score_cell(i, j);
+                    }
+                }
+            }
+
+            num_threads_finished.fetch_add(1);
+            if (num_threads_finished.load() >= num_threads) {
+                cv.notify_all();
+                continue;
+            }
+            std::unique_lock<std::mutex> lk(mutexes[processor_id]);
+            while (num_threads_finished.load() < num_threads)
+                cv.wait(lk);
+        }
+    }
 
     void compute_score_cell(unsigned int i, unsigned int j) {
         // add safety bounds on i and j
