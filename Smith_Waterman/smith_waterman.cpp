@@ -3,39 +3,49 @@
 #include <algorithm>
 #include <cstring>
 #include <limits>
-#include "sequence_alignment_parallel.cpp"
+#include "sequence_alignment.cpp"
 
 using namespace std;
 
 #define G   4 //penalty associated to an indel (insertion or deletion)
 
 
-int match_score(char a_i, char b_j){
-    if (a_i == b_j){
-        return 5;
-    }
-    else {
-        return -3;
-    }
-}
+class SequenceAlignment_NonParallel : public SequenceAlignment {
+public:
 
-void score_matrix(
+SequenceAlignment_NonParallel(
+        char *A, char *B, 
+        unsigned int lenA, unsigned int lenB,
+        int gap_penalty, int match_score, int mismatch_score, AlignmentType at = AlignmentType::LOCAL) {
 
-    char* sub_A, 
-    char* sub_B,
-    std::vector<std::vector<int> > *H,
-    std::vector<std::vector<TracebackDirection> > *traceback_matrix, 
-    AlignmentType at = AlignmentType::LOCAL
-) {
+        this->A = A;
+        this->B = B;
+        this->lenA = lenA;
+        this->lenB = lenB;
+        this->gap_penalty = gap_penalty;
+        this->match_score = match_score;
+        this->mismatch_score = mismatch_score;
+        this->at = at;
+
+        //We instantiate a 2d vector with default values 0: 
+        int default_value = 0;
+        H = new std::vector<std::vector<int>>(lenA+1, std::vector<int>(lenB+1, default_value));
+        traceback_matrix = new std::vector<std::vector<TracebackDirection>>(
+            lenA+1, 
+            std::vector<TracebackDirection>(lenB+1, TracebackDirection::INVALID)
+        );
+        }
+
+void compute_score_matrix() {
     //We compute the score Matrix
-    const int n = strlen(sub_A);
-    const int m = strlen(sub_B);
+    const int n = strlen(A);
+    const int m = strlen(B);
 
     for (int i = 1; i < n+1; i++){
         for (int j = 1; j < m+1; j++){
-            int match_mismatch = (*H)[i-1][j-1] + match_score(sub_A[i-1], sub_B[j-1]);
-            int deletion = (*H)[i-1][j] - G;
-            int insertion = (*H)[i][j-1] - G;
+            int match_mismatch = (*H)[i-1][j-1] + compute_match_score(A[i-1], B[j-1]);
+            int deletion = (*H)[i-1][j] - this->gap_penalty;
+            int insertion = (*H)[i][j-1] - this->gap_penalty;
 
             int score_ij;
             TracebackDirection dir;
@@ -73,28 +83,9 @@ void score_matrix(
     }
 }
 
-void find_indexes_max_cell(std::vector< std::vector<int> > H, int &k, int &l){
-    //We find the LAST cell with the max score
-    int maximum = 0;
-    for(int i = 0; i < H.size(); i++){
-        for (int j = 0; j < H[0].size(); j++){
-            if (H[i][j] > maximum){
-                maximum = H[i][j];
-                k = i;
-                l = j;
-            }
-        }
-    }
-}
 
-void print_2d_vector(std::vector< std::vector<int> > H){
-    for (int i = 0; i < H.size(); i++){
-        for (int j = 0; j < H[i].size(); j++){
-        cout << H[i][j] << " ";
-        }
-        cout << std::endl;
-    }
-}
+};
+
 
 // int find_best_cell(std::vector< std::vector<int> > H, int &best_i, int &best_j, int current_i, int current_j){
 //     //We find the best cell : we return 0 if it is the diagonal one, 1 if it is the left one and 2 if it is the top one.
@@ -159,28 +150,27 @@ void print_2d_vector(std::vector< std::vector<int> > H){
 //     return alignment;
 // }
 
-// int main(){
+int main(){
 
-//     char* sequence_A = "GACTTAC";
-//     char* sequence_B = "CGTGAATTCAT";
+    char* sequence_A = "GACTTAC";
+    char* sequence_B = "CGTGAATTCAT";
+    int n = strlen(sequence_A);
+    int m = strlen(sequence_B);
 
-//     int n = strlen(sequence_A);
-//     int m = strlen(sequence_B);
+    SequenceAlignment_NonParallel s_a(sequence_A, sequence_B, n, m, 4, 5, -3);
+    
 
-//     std::cout << sequence_A << "\n";
-//     std::vector< std::vector<int> > H = score_matrix(sequence_A, sequence_B);
+    std::cout << sequence_A << "\n";
 
-//     // std::vector< std::vector<int> > H_exact = 
-//     for (int i = 0; i < H.size(); i++){
-//         for (int j = 0; j < H[i].size(); j++){
-//         cout << H[i][j] << " ";
-//         }
-//         cout << std::endl;
-//     }
+    s_a.compute_score_matrix();
 
-//     int k, l;
-//     find_indexes_max_cell(H, k,l);
-//     cout << k << l;
+    // std::vector< std::vector<int> > H_exact = 
+    for (int i = 0; i < (*s_a.H).size(); i++){
+        for (int j = 0; j < s_a.H[i].size(); j++){
+        std::cout << (*s_a.H)[i][j] << " ";
+        }
+        cout << std::endl;
+    }
 
-//     return 0;
-//     }
+    return 0;
+    }
