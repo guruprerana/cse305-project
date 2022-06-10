@@ -8,7 +8,6 @@
 #include <condition_variable>
 #include <atomic>
 
-#include "utils.cpp"
 
 int max_vector(std::vector<int> ints) {
     if (ints.size() == 0) {
@@ -61,10 +60,13 @@ public:
     unsigned int lenA, lenB;
     int gap_penalty, match_score, mismatch_score;
 
+    char *alignA;
+    char *alignB;
     AlignmentType at;
 
     std::vector<std::vector<int> > *H;
     std::vector<std::vector<TracebackDirection> > *traceback_matrix;
+
 
     int compute_match_score(char a_i, char b_j){
         if (a_i == b_j){
@@ -88,5 +90,26 @@ public:
         }
     }
 }
+
+    // void print_alignment(int i, int j){
+    //     if ((*H)[i][j] == 0){
+    //         return;
+    //     }
+    //     else{
+    //         if ((*traceback_matrix)[i][j] == TracebackDirection::MATCH){
+    //             (*alignA).push_back((*A)[i - 1]);
+    //             (*alignB).push_back((*B)[j - 1]);
+    //         }
+    //         else if ((*traceback_matrix)[i][j] == TracebackDirection::DELETION){
+    //             (*alignA).push_back('-');
+    //             (*alignB).push_back((*B)[j - 1]);
+    //         }
+    //         else ((*traceback_matrix)[i][j] == TracebackDirection::INSERTION){
+    //             (*alignA).push_back((*A)[i - 1]);
+    //             (*alignB).push_back('-');
+    //         }
+    //         print_alignment(i-1, j-1, align_a, align_b);
+    //     }
+    // }
 
 };

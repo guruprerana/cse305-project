@@ -29,8 +29,8 @@ SequenceAlignment_NonParallel(
 
         //We instantiate a 2d vector with default values 0: 
         int default_value = 0;
-        H = new std::vector<std::vector<int>>(lenA+1, std::vector<int>(lenB+1, default_value));
-        traceback_matrix = new std::vector<std::vector<TracebackDirection>>(
+        H = new std::vector<std::vector<int> >(lenA+1, std::vector<int>(lenB+1, default_value));
+        traceback_matrix = new std::vector<std::vector<TracebackDirection> >(
             lenA+1, 
             std::vector<TracebackDirection>(lenB+1, TracebackDirection::INVALID)
         );
@@ -38,11 +38,8 @@ SequenceAlignment_NonParallel(
 
 void compute_score_matrix() {
     //We compute the score Matrix
-    const int n = strlen(A);
-    const int m = strlen(B);
-
-    for (int i = 1; i < n+1; i++){
-        for (int j = 1; j < m+1; j++){
+    for (int i = 1; i < lenA+1; i++){
+        for (int j = 1; j < lenB+1; j++){
             int match_mismatch = (*H)[i-1][j-1] + compute_match_score(A[i-1], B[j-1]);
             int deletion = (*H)[i-1][j] - this->gap_penalty;
             int insertion = (*H)[i][j-1] - this->gap_penalty;
@@ -83,8 +80,34 @@ void compute_score_matrix() {
     }
 }
 
-
 };
+
+
+// int main(){
+
+//     char* sequence_A = "GACTTAC";
+//     char* sequence_B = "CGTGAATTCAT";
+//     int n = strlen(sequence_A);
+//     int m = strlen(sequence_B);
+
+//     SequenceAlignment_NonParallel s_a(sequence_A, sequence_B, n, m, 4, 5, -3);
+    
+
+//     std::cout << sequence_A << "\n";
+
+//     s_a.compute_score_matrix();
+
+//     // std::vector< std::vector<int> > H_exact = 
+//     for (int i = 0; i < (*s_a.H).size(); i++){
+//         for (int j = 0; j < s_a.H[i].size(); j++){
+//         std::cout << (*s_a.H)[i][j] << " ";
+//         }
+//         cout << std::endl;
+//     }
+
+//     return 0;
+//     }
+
 
 
 // int find_best_cell(std::vector< std::vector<int> > H, int &best_i, int &best_j, int current_i, int current_j){
@@ -149,28 +172,3 @@ void compute_score_matrix() {
 //     char* alignment = compute_optimal_alignment(H);
 //     return alignment;
 // }
-
-int main(){
-
-    char* sequence_A = "GACTTAC";
-    char* sequence_B = "CGTGAATTCAT";
-    int n = strlen(sequence_A);
-    int m = strlen(sequence_B);
-
-    SequenceAlignment_NonParallel s_a(sequence_A, sequence_B, n, m, 4, 5, -3);
-    
-
-    std::cout << sequence_A << "\n";
-
-    s_a.compute_score_matrix();
-
-    // std::vector< std::vector<int> > H_exact = 
-    for (int i = 0; i < (*s_a.H).size(); i++){
-        for (int j = 0; j < s_a.H[i].size(); j++){
-        std::cout << (*s_a.H)[i][j] << " ";
-        }
-        cout << std::endl;
-    }
-
-    return 0;
-    }
