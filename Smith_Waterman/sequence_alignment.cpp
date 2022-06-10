@@ -77,13 +77,13 @@ public:
         }
     }
 
-    void find_indexes_max_cell(std::vector< std::vector<int> > H, int &k, int &l){
+    void find_indexes_max_score_cell(int &k, int &l){
     //We find the LAST cell with the max score
     int maximum = 0;
-    for(int i = 0; i < H.size(); i++){
-        for (int j = 0; j < H[0].size(); j++){
-            if (H[i][j] > maximum){
-                maximum = H[i][j];
+    for(int i = 0; i < lenA + 1; i++){
+        for (int j = 0; j < lenB + 1; j++){
+            if ((*H)[i][j] > maximum){
+                maximum = (*H)[i][j];
                 k = i;
                 l = j;
             }
@@ -91,21 +91,21 @@ public:
     }
 }
 
-    // void print_alignment(int i, int j){
+    // void traceback(int i, int j){
     //     if ((*H)[i][j] == 0){
     //         return;
     //     }
     //     else{
     //         if ((*traceback_matrix)[i][j] == TracebackDirection::MATCH){
-    //             (*alignA).push_back((*A)[i - 1]);
-    //             (*alignB).push_back((*B)[j - 1]);
+    //             (*alignA).push_back((*A)[i-1]);
+    //             (*alignB).push_back((*B)[j-1]);
     //         }
     //         else if ((*traceback_matrix)[i][j] == TracebackDirection::DELETION){
     //             (*alignA).push_back('-');
-    //             (*alignB).push_back((*B)[j - 1]);
+    //             (*alignB).push_back((*B)[j-1]);
     //         }
     //         else ((*traceback_matrix)[i][j] == TracebackDirection::INSERTION){
-    //             (*alignA).push_back((*A)[i - 1]);
+    //             (*alignA).push_back((*A)[i-1]);
     //             (*alignB).push_back('-');
     //         }
     //         print_alignment(i-1, j-1, align_a, align_b);

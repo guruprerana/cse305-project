@@ -34,7 +34,7 @@ public:
     std::atomic_int phase;
     unsigned int num_phases;
 
-    SequenceAlignment(
+    SequenceAlignmentParallel(
         char *A, char *B, 
         unsigned int lenA, unsigned int lenB,
         unsigned int num_threads, unsigned int block_size_x, unsigned int block_size_y,
@@ -78,7 +78,7 @@ public:
         num_phases = n_blocks_A + n_blocks_B - 1; // to be computed based on m, n, block_size
     }
 
-    ~SequenceAlignment() {
+    ~SequenceAlignmentParallel() {
         delete H;
         delete traceback_matrix;
         delete mutexes;

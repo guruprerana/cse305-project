@@ -1,7 +1,11 @@
-#include "smith_waterman.cpp"
-//#include "sequence_alignment_parallel.cpp"
+#include "sequence_alignment_nonparallel.cpp"
+#include "sequence_alignment_parallel.cpp"
 
-bool test_score_matrix(){
+//###################################################
+// Example 1 of Sequence Alignment
+//##################################################
+
+SequenceAlignment_NonParallel sequence_alignment_1(){
     char* sequence_A = "GACTTAC";
     char* sequence_B = "CGTGAATTCAT";
     int n = strlen(sequence_A);
@@ -10,9 +14,16 @@ bool test_score_matrix(){
     int match_score = 5;
     int mismatch_score = -3;
     AlignmentType at = AlignmentType::LOCAL;
-    
     SequenceAlignment_NonParallel s_a(sequence_A, sequence_B, n, m, gap_penalty, match_score, mismatch_score, at);
+    return s_a;
+}
 
+//###################################################
+// Test functions of Non-Parallel Version
+//##################################################
+
+bool test_score_matrix(){
+    SequenceAlignment_NonParallel s_a = sequence_alignment_1();
     s_a.compute_score_matrix();
 
     std::vector< std::vector<int> > H_exa = {
@@ -26,23 +37,55 @@ bool test_score_matrix(){
         {0, 5, 1, 0, 0, 4, 5, 2, 9, 18, 14, 15}
     };
 
-    for (int i = 0; i < n+1; i++){
-        for (int j = 0; j < m+1; j++){
+    for (int i = 0; i < s_a.lenA+1; i++){
+        for (int j = 0; j < s_a.lenB+1; j++){
             if ((*s_a.H)[i][j] != H_exa[i][j]){
                 return false;
             }
         }
-        std::cout << "\n";
     }
     
     return true;
 }
 
+bool test_find_indexes_max_score_cell(){
+    SequenceAlignment_NonParallel s_a = sequence_alignment_1();
+    s_a.compute_score_matrix();
+    int k, l; //We initialize the coordinates
+    s_a.find_indexes_max_score_cell(k, l);
+    int k_exa = 6;
+    int l_exa = 10;
+    return (k == k_exa) && (l == l_exa); 
+}
+
+bool test_traceback(){
+    SequenceAlignment_NonParallel s_a = sequence_alignment_1();
+    s_a.compute_score_matrix();
+    int k, l; //We initialize the coordinates
+    s_a.find_indexes_max_score_cell(k, l);
+    // s_a.traceback();
+    // std::cout << s_a.alignA << "\n";
+    // std::cout << s_a.alignB << "\n";
+
+    char* alignA_exa = "";
+    char* alignB_exa = "";
+    return true;
+}
+
+//###################################################
+// Test functions of Parallel Version
+//##################################################
+
 // bool test_cells_in_sequence_alignment(){
 //     char* sequence_A = "GACTTACTA";
 //     char* sequence_B = "CGTGAATTC";
-    
-//     SequenceAlignment s_a(sequence_A, sequence_B, 9, 9, 3, 1, 1, 2, 3, -5);
+//     int n = strlen(sequence_A);
+//     int m = strlen(sequence_B);
+//     int gap_penalty = 4;
+//     int match_score = 5;
+//     int mismatch_score = -3;
+//     AlignmentType at = AlignmentType::LOCAL;
+//     SequenceAlignmentParallel s_a(sequence_A, sequence_B, 9, 9, 3, 1, 1, 2, 3, -5);
 //     std::vector<Block> blocks_thread1_phase7;
 //     s_a.phase = 7;
 //     s_a.cells(1, blocks_thread1_phase7, 7);
@@ -116,9 +159,21 @@ bool test_score_matrix(){
 
 int main(){
 
+    std::cout << "Tests - Non-Parallel Version" << "\n";
+
     if (test_score_matrix()){
         cout << "Test 1 passed!" << endl;
     }
+
+    if (test_find_indexes_max_score_cell()){
+        cout << "Test 2 passed!" << endl;
+    }
+
+    if (test_traceback()){
+        cout << "Test 3 passed!" << endl;
+    }
+
+    std::cout << "Tests - Parallel Version" << "\n";
 
     // if (test_cells_in_sequence_alignment()){
     //     std::cout << "Test 2 passed!" << "\n";
