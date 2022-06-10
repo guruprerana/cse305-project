@@ -79,7 +79,6 @@ void compute_score_matrix() {
         }
     }
 }
-
 };
 
 
