@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <limits>
+#include <fstream>
 
 int max_vector(std::vector<int> ints) {
     if (ints.size() == 0) {
@@ -33,4 +34,28 @@ void reverse_array(char *X, unsigned int lenX) {
         X[i] = X[j];  
         X[j] = temp;  
     }
+}
+
+void read_file(std::string &filename, char *arr, unsigned int len) {
+    std::ifstream stream;
+    stream.open(filename);
+
+    for (unsigned int i = 0; i < len; ++i) {
+        if (stream.eof())
+            break;
+        arr[i] = stream.get();
+    }
+
+    stream.close();
+}
+
+void print_file(std::string &filename, char *arr, unsigned int len) {
+    std::ofstream stream;
+    stream.open(filename);
+
+    for (unsigned int i = 0; i < len; ++i) {
+        stream<<arr[i];
+    }
+
+    stream.close();
 }

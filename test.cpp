@@ -201,6 +201,25 @@ bool test_score_matrix_parallel(){
     return true;
 }
 
+bool test_len562_align() {
+    char *A = new char[562], *B = new char[562];
+    std::string fileA = "Sequences_Uniprot/len562.fasta";
+    std::string fileB = "Sequences_Uniprot/len562-1.fasta";
+    read_file(fileA, A, 562);
+    read_file(fileB, B, 562);
+
+    SequenceAlignmentParallel sap(A, B, 562, 562, 3, 10, 10, 4, 5, -3, AlignmentType::GLOBAL);
+
+    sap.compute_alignment();
+
+    std::string fileA_out = "Sequences_Uniprot/len562.fasta.aligned";
+    std::string fileB_out = "Sequences_Uniprot/len562-1.fasta.aligned";
+
+    print_file(fileA_out, sap.alignA, sap.len_alignA);
+    print_file(fileB_out, sap.alignB, sap.len_alignB);
+    return true;
+}
+
 // bool test_cells_in_sequence_alignment(){
 //     char* sequence_A = "GACTTACTA";
 //     char* sequence_B = "CGTGAATTC";
@@ -312,10 +331,16 @@ int main(){
 
     std::cout << "Tests - Parallel Version" << "\n";
 
-    if (test_score_matrix_parallel()){
+    if (test_score_matrix_parallel()) {
         cout << "Test 5 passed!" << endl;
     } else {
         cout << "Test 5 failed :(" << endl;
+    }
+
+    if (test_len562_align()) {
+        cout << "Test 6 passed!" << endl;
+    } else {
+        cout << "Test 6 failed :(" << endl;
     }
 
     // if (test_cells_in_sequence_alignment()){

@@ -89,6 +89,8 @@ void SequenceAlignment::traceback(unsigned int i, unsigned int j){
             alignA[len_alignA] = A[i-1];
             alignB[len_alignB] = '-';
             i--;
+        } else {
+            break;
         }
 
         len_alignA++;

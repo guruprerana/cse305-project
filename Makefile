@@ -1,30 +1,28 @@
 CXX = g++
 CFLAGS = -pthread -std=c++17 -Wall
 
-SOURCES = gradinglib/gradinglib.cpp grading/grading.cpp main.cpp 
-OBJECTS = sequence_alignment.o
-STUDENTS_SOURCES = td7.cpp
+SEQUENCE_ALIGNMENT_FILES = sequence_alignment.hpp \ 
+	sequence_alignment.cpp \
+	sequence_alignment_parallel.cpp \
+	sequence_alignment_nonparallel.cpp \
+	utils/cpp
 
-grader: $(OBJECTS)
-	$(CXX) $(CFLAGS) -o grader $(OBJECTS) -latomic 
+all: main.o $(SEQUENCE_ALIGNMENT_FILES)
+	$(CXX) $(CFLAGS) -o main main.o
 
-gradinglib.o: gradinglib/gradinglib.cpp gradinglib/gradinglib.hpp
-	$(CXX) -c $(CFLAGS) -o gradinglib.o gradinglib/gradinglib.cpp
-
-grading.o: grading/grading.cpp gradinglib/gradinglib.hpp td7.cpp
-	$(CXX) -c $(CFLAGS) -o grading.o grading/grading.cpp -I.
-
-main.o: main.cpp grading/grading.hpp
+main.o: main.cpp
 	$(CXX) -c $(CFLAGS) -o main.o main.cpp
 
-TEST_OUTPUT_OBJECTS = test_output.o
+TEST_OBJECTS = test.o
 
-test_output: $(TEST_OUTPUT_OBJECTS)
-	$(CXX) $(CFLAGS) -o test_output $(TEST_OUTPUT_OBJECTS) -latomic
+test: $(TEST_OBJECTS) $(SEQUENCE_ALIGNMENT_FILES)
+	$(CXX) $(CFLAGS) -o test $(TEST_OBJECTS) -latomic
 
-test_output.o: test_output.cpp
-	$(CXX) -c $(CFLAGS) -o test_output.o test_output.cpp -I.
+test.o: test.cpp
+	$(CXX) -c $(CFLAGS) -o test.o test.cpp -I.
 
 clean:
 	rm -f *.o
 	rm -f grader
+	rm make
+	rm test
