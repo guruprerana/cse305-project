@@ -1,5 +1,4 @@
 #include "sequence_alignment_nonparallel.cpp"
-#include "sequence_alignment_parallel.cpp"
 
 //###################################################
 // Example 1 of Sequence Alignment
@@ -51,7 +50,7 @@ bool test_score_matrix(){
 bool test_find_indexes_max_score_cell(){
     SequenceAlignment_NonParallel s_a = sequence_alignment_1();
     s_a.compute_score_matrix();
-    int k, l; //We initialize the coordinates
+    unsigned int k, l; //We initialize the coordinates
     s_a.find_indexes_max_score_cell(k, l);
     int k_exa = 6;
     int l_exa = 10;
@@ -60,15 +59,15 @@ bool test_find_indexes_max_score_cell(){
 
 bool test_traceback(){
     SequenceAlignment_NonParallel s_a = sequence_alignment_1();
-    s_a.compute_score_matrix();
-    int k, l; //We initialize the coordinates
-    s_a.find_indexes_max_score_cell(k, l);
-    // s_a.traceback();
-    // std::cout << s_a.alignA << "\n";
-    // std::cout << s_a.alignB << "\n";
+    s_a.compute_alignment();
 
-    char* alignA_exa = "";
-    char* alignB_exa = "";
+    for (int i = 0; i < s_a.len_alignA; i++) {
+        std::cout<<s_a.alignA[i];
+    }
+    std::cout<<std::endl;
+    for (int i = 0; i < s_a.len_alignB; i++) {
+        std::cout<<s_a.alignB[i];
+    }
     return true;
 }
 

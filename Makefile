@@ -7,7 +7,7 @@ OBJECTS = $(SOURCES:.cpp=.o)
 main.o: main.cpp grading/grading.hpp
 	$(CXX) -c $(CFLAGS) -o main.o main.cpp
 
-SMITH_WATERMAN_SOURCES = Smith_Waterman/smith_waterman.cpp Smith_Waterman/test_sw.cpp Smith_Waterman/sequence_alignment_parallel.cpp
+SMITH_WATERMAN_SOURCES = Smith_Waterman/test_sw.cpp Smith_Waterman/sequence_alignment_parallel.cpp
 SMITH_WATERMAN_OBJECTS = $(SMITH_WATERMAN_SOURCES:.cpp=.o)
 
 smith_waterman: $(SMITH_WATERMAN_OBJECTS)

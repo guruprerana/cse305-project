@@ -7,8 +7,6 @@
 
 using namespace std;
 
-#define G   4 //penalty associated to an indel (insertion or deletion)
-
 
 class SequenceAlignment_NonParallel : public SequenceAlignment {
 public:
@@ -34,48 +32,25 @@ SequenceAlignment_NonParallel(
             lenA+1, 
             std::vector<TracebackDirection>(lenB+1, TracebackDirection::INVALID)
         );
+
+        this->alignA = new char[lenA + lenB + 2];
+        this->alignB = new char[lenA + lenB + 2];
+        this->len_alignA = 0;
+        this->len_alignB = 0;
         }
+
+~SequenceAlignment_NonParallel() {
+        delete H;
+        delete traceback_matrix;
+        delete alignA;
+        delete alignB;
+    }
 
 void compute_score_matrix() {
     //We compute the score Matrix
     for (int i = 1; i < lenA+1; i++){
         for (int j = 1; j < lenB+1; j++){
-            int match_mismatch = (*H)[i-1][j-1] + compute_match_score(A[i-1], B[j-1]);
-            int deletion = (*H)[i-1][j] - this->gap_penalty;
-            int insertion = (*H)[i][j-1] - this->gap_penalty;
-
-            int score_ij;
-            TracebackDirection dir;
-
-            if (at == AlignmentType::LOCAL) {
-                std::vector<int> max_v;
-                max_v.push_back(0);
-                max_v.push_back(match_mismatch);
-                max_v.push_back(deletion);
-                max_v.push_back(insertion);
-                score_ij = max_vector(max_v);
-            } else {
-                std::vector<int> max_v;
-                max_v.push_back(match_mismatch);
-                max_v.push_back(deletion);
-                max_v.push_back(insertion);
-                score_ij = max_vector(max_v);
-            }
-
-            if (score_ij == 0 && at == AlignmentType::LOCAL) {
-                dir = TracebackDirection::INVALID;
-            } else if (score_ij == match_mismatch) {
-                dir = TracebackDirection::MATCH;
-            } else if (score_ij == deletion) {
-                dir = TracebackDirection::DELETION;
-            } else if (score_ij == insertion) {
-                dir = TracebackDirection::INSERTION;
-            } else {
-                dir = TracebackDirection::INVALID;
-            }
-
-            (*H)[i][j] = score_ij;
-            (*traceback_matrix)[i][j] = dir;
+            compute_score_cell(i, j);
         }
     }
 }

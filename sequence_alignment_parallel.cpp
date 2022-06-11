@@ -10,21 +10,11 @@
 
 #include "sequence_alignment.cpp"
 
-class SequenceAlignmentParallel {
+class SequenceAlignmentParallel : public SequenceAlignment {
 public:
-    char *A;
-    char *B;
-    unsigned int lenA, lenB;
 
     unsigned int num_threads, block_size_x, block_size_y;
     unsigned int n_blocks_A, n_blocks_B;
-
-    int gap_penalty, match_score, mismatch_score;
-
-    AlignmentType at;
-
-    std::vector<std::vector<int> > *H;
-    std::vector<std::vector<TracebackDirection> > *traceback_matrix;
 
     std::vector<std::thread> threads;
     std::mutex *mutexes;
@@ -76,26 +66,25 @@ public:
             n_blocks_B = (lenB / block_size_y) + 1;
 
         num_phases = n_blocks_A + n_blocks_B - 1; // to be computed based on m, n, block_size
+
+        this->alignA = new char[lenA + lenB + 2];
+        this->alignB = new char[lenA + lenB + 2];
+        this->len_alignA = 0;
+        this->len_alignB = 0;
     }
 
     ~SequenceAlignmentParallel() {
         delete H;
         delete traceback_matrix;
         delete mutexes;
+        delete alignA;
+        delete alignB;
         //delete cvs;
-    }
-
-    int compute_match_score(char a_i, char b_j) {
-        if (a_i == b_j) {
-            return match_score;
-        } else {
-            return mismatch_score;
-        }
     }
 
     void compute_score_matrix() {
         for (unsigned int i = 0; i < num_threads; ++i) {
-            threads.push_back(std::thread(&SequenceAlignment::processor_compute, this, i+1));
+            threads.push_back(std::thread(&SequenceAlignmentParallel::processor_compute, this, i+1));
         }
 
         for (unsigned int i = 0; i < num_threads; ++i) {
@@ -135,47 +124,6 @@ public:
             while (phase != local_phase)
                 cvs[processor_id - 1].wait(lk);
         }
-    }
-
-    void compute_score_cell(unsigned int i, unsigned int j) {
-        // add safety bounds on i and j
-
-        int match_mismatch = (*H)[i-1][j-1] + compute_match_score(A[i-1], B[j-1]);
-        int insertion = (*H)[i-1][j] - gap_penalty;
-        int deletion = (*H)[i][j-1] - gap_penalty;
-
-        int score_ij;
-        TracebackDirection dir;
-
-        if (at == AlignmentType::LOCAL) {
-            std::vector<int> max_v;
-            max_v.push_back(0);
-            max_v.push_back(match_mismatch);
-            max_v.push_back(deletion);
-            max_v.push_back(insertion);
-            score_ij = max_vector(max_v);
-        } else {
-            std::vector<int> max_v;
-            max_v.push_back(match_mismatch);
-            max_v.push_back(deletion);
-            max_v.push_back(insertion);
-            score_ij = max_vector(max_v);
-        }
-
-        if (score_ij == 0 && at == AlignmentType::LOCAL) {
-            dir = TracebackDirection::INVALID;
-        } else if (score_ij == match_mismatch) {
-            dir = TracebackDirection::MATCH;
-        } else if (score_ij == deletion) {
-            dir = TracebackDirection::DELETION;
-        } else if (score_ij == insertion) {
-            dir = TracebackDirection::INSERTION;
-        } else {
-            dir = TracebackDirection::INVALID;
-        }
-
-        (*H)[i][j] = score_ij;
-        (*traceback_matrix)[i][j] = dir;
     }
 
     void cells(unsigned int processor_id, std::vector<Block> &blocks, unsigned int phase) {
