@@ -1,7 +1,6 @@
 #include <cstring>
 #include <iostream>
 #include <algorithm>
-#include <fstream>
 #include <chrono>
 
 #include "sequence_alignment.hpp"
@@ -11,9 +10,6 @@
 
 
 void generate_threads_vs_size_data() {
-    std::ofstream output;
-    output.open("benchmarking/threads_vs_size.csv");
-
     char *A = new char[5083], *B = new char[4779];
 
     std::string fileA = "Sequences_Uniprot/len-5083.fasta";
@@ -27,7 +23,7 @@ void generate_threads_vs_size_data() {
     }
     std::cout<<std::endl;
 
-    for (int thread = 7; thread < 11; thread++) {
+    for (int thread = 2; thread < 11; thread++) {
         std::cout<<thread<<",";
         for (int size = 500; size < 2001; size += 500) {
             SequenceAlignmentParallel sap(A, B, size, size, thread, 25, 25, 4, 5, -3);
@@ -41,13 +37,9 @@ void generate_threads_vs_size_data() {
         std::cout<<std::endl;
     }
     std::cout<<std::endl;
-    output.close();
 }
 
 void generate_size_vs_block_size_data() {
-    std::ofstream output;
-    output.open("benchmarking/threads_vs_size.csv");
-
     char *A = new char[5083], *B = new char[4779];
 
     std::string fileA = "Sequences_Uniprot/len-5083.fasta";
@@ -61,7 +53,7 @@ void generate_size_vs_block_size_data() {
     }
     std::cout<<std::endl;
 
-    for (int block_size = 5; block_size < 11; block_size += 1) {
+    for (int block_size = 10; block_size < 151; block_size += 10) {
         std::cout<<block_size<<",";
         for (int size = 500; size < 2001; size += 500) {
             SequenceAlignmentParallel sap(A, B, size, size, 8, block_size, block_size, 4, 5, -3);
@@ -75,7 +67,6 @@ void generate_size_vs_block_size_data() {
         std::cout<<std::endl;
     }
     std::cout<<std::endl;
-    output.close();
 }
 
 int main() {
