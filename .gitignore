@@ -33,6 +33,5 @@
 
 .vscode
 
-Smith_Waterman/test_sw
-Smith_Waterman/smith_waterman
-Myers_Millers/mm
+main
+test
