@@ -17,8 +17,16 @@ test: $(TEST_OBJECTS) $(SEQUENCE_ALIGNMENT_FILES)
 test.o: test.cpp
 	$(CXX) -c $(CFLAGS) -o test.o test.cpp -I.
 
+BENCHMARKER_OBJECTS = benchmarker.o
+
+benchmarker: $(BENCHMARKER_OBJECTS) $(SEQUENCE_ALIGNMENT_FILES)
+	$(CXX) $(CFLAGS) -o benchmarker $(BENCHMARKER_OBJECTS) -latomic
+
+benchmarker.o: benchmarker.cpp
+	$(CXX) -c $(CFLAGS) -o benchmarker.o benchmarker.cpp -I.
+
 clean:
 	rm -f *.o
 	rm -f grader
-	rm make
+	rm main
 	rm test

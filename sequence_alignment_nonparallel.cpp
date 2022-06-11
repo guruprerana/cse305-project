@@ -23,6 +23,15 @@ SequenceAlignment_NonParallel::SequenceAlignment_NonParallel(
         std::vector<TracebackDirection>(lenB+1, TracebackDirection::INVALID)
     );
 
+    if (at == AlignmentType::GLOBAL) {
+        for (unsigned int i = 1; i < lenA + 1; ++i) {
+            (*traceback_matrix)[i][0] = TracebackDirection::INSERTION;
+        }
+        for (unsigned int j = 1; j < lenB + 1; ++j) {
+            (*traceback_matrix)[0][j] = TracebackDirection::DELETION;
+        }
+    }
+
     this->alignA = new char[lenA + lenB + 2];
     this->alignB = new char[lenA + lenB + 2];
     this->len_alignA = 0;

@@ -101,17 +101,18 @@ bool test_traceback_global(){
     SequenceAlignment_NonParallel s_a = sequence_alignment_2();
     s_a.compute_alignment();
 
-    char *expected_alignA = "GACTT-A";
-    char *expected_alignB = "GAATTCA";
+    char *expected_alignA = "---GACTT-AC";
+    char *expected_alignB = "CGTGAATTCAT";
 
-    for (unsigned int i = 0; i < s_a.len_alignA && i < 7; i++) {
+    for (unsigned int i = 0; i < s_a.len_alignA && i < 11; i++) {
         if (s_a.alignA[i] != expected_alignA[i])
             return false;
     }
-    for (unsigned int i = 0; i < s_a.len_alignB, 7 && i < 7; i++) {
+    for (unsigned int i = 0; i < s_a.len_alignB && i < 11; i++) {
         if (s_a.alignB[i] != expected_alignB[i])
             return false;
     }
+
     return true;
 }
 
@@ -194,25 +195,6 @@ bool test_score_matrix_parallel() {
         }
     }
     
-    return true;
-}
-
-bool test_len562_align() {
-    char *A = new char[562], *B = new char[562];
-    std::string fileA = "Sequences_Uniprot/len562.fasta";
-    std::string fileB = "Sequences_Uniprot/len562-1.fasta";
-    read_file(fileA, A, 562);
-    read_file(fileB, B, 562);
-
-    SequenceAlignmentParallel sap(A, B, 562, 562, 3, 10, 10, 4, 5, -3, AlignmentType::GLOBAL);
-
-    sap.compute_alignment();
-
-    std::string fileA_out = "Sequences_Uniprot/len562.fasta.aligned";
-    std::string fileB_out = "Sequences_Uniprot/len562-1.fasta.aligned";
-
-    print_file(fileA_out, sap.alignA, sap.len_alignA);
-    print_file(fileB_out, sap.alignB, sap.len_alignB);
     return true;
 }
 
@@ -331,12 +313,6 @@ int main() {
         cout << "Test 5 passed!" << endl;
     } else {
         cout << "Test 5 failed :(" << endl;
-    }
-
-    if (test_len562_align()) {
-        cout << "Test 6 passed!" << endl;
-    } else {
-        cout << "Test 6 failed :(" << endl;
     }
 
     // if (test_cells_in_sequence_alignment()){

@@ -71,8 +71,8 @@ void SequenceAlignment::traceback(unsigned int i, unsigned int j){
     while (true) {
         if (at == AlignmentType::LOCAL && (*H)[i][j] == 0)
             break;
-        else if (at == AlignmentType::GLOBAL && (i == 0 || j == 0))
-            break;
+        // else if (at == AlignmentType::GLOBAL && (i == 0 || j == 0))
+        //     break;
 
         if ((*traceback_matrix)[i][j] == TracebackDirection::MATCH){
             alignA[len_alignA] = A[i-1];
