@@ -1,11 +1,7 @@
 CXX = g++
 CFLAGS = -pthread -std=c++17 -Wall
 
-SEQUENCE_ALIGNMENT_FILES = sequence_alignment.hpp \ 
-	sequence_alignment.cpp \
-	sequence_alignment_parallel.cpp \
-	sequence_alignment_nonparallel.cpp \
-	utils/cpp
+SEQUENCE_ALIGNMENT_FILES = sequence_alignment.hpp sequence_alignment.cpp sequence_alignment_parallel.cpp sequence_alignment_nonparallel.cpp utils.cpp
 
 all: main.o $(SEQUENCE_ALIGNMENT_FILES)
 	$(CXX) $(CFLAGS) -o main main.o

@@ -105,17 +105,13 @@ bool test_traceback_global(){
     char *expected_alignB = "GAATTCA";
 
     for (unsigned int i = 0; i < s_a.len_alignA && i < 7; i++) {
-        // if (s_a.alignA[i] != expected_alignA[i])
-        //     return false;
-        std::cout<<s_a.alignA[i];
+        if (s_a.alignA[i] != expected_alignA[i])
+            return false;
     }
-    std::cout<<std::endl;
     for (unsigned int i = 0; i < s_a.len_alignB, 7 && i < 7; i++) {
-        // if (s_a.alignB[i] != expected_alignB[i])
-        //     return false;
-        std::cout<<s_a.alignB[i];
+        if (s_a.alignB[i] != expected_alignB[i])
+            return false;
     }
-    std::cout<<std::endl;
     return true;
 }
 
@@ -171,7 +167,7 @@ SequenceAlignmentParallel *sequence_alignment_1_parallel3() {
     );
 }
 
-bool test_score_matrix_parallel(){
+bool test_score_matrix_parallel() {
     SequenceAlignment_NonParallel s_a_reference = sequence_alignment_1();
     s_a_reference.compute_score_matrix();
 
@@ -301,7 +297,7 @@ bool test_len562_align() {
 // //     // }    
 // // }
 
-int main(){
+int main() {
 
     std::cout << "Tests - Non-Parallel Version" << "\n";
 
@@ -354,4 +350,4 @@ int main(){
     // test_parallel_sequence_alignment();
 
     return 0;
-    }
+}
