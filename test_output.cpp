@@ -1,4 +1,13 @@
+#include <cstring>
+#include <iostream>
+#include <algorithm>
+
+#include "sequence_alignment.hpp"
+#include "sequence_alignment.cpp"
 #include "sequence_alignment_nonparallel.cpp"
+#include "sequence_alignment_parallel.cpp"
+
+using namespace std;
 
 //###################################################
 // Example 1 of Sequence Alignment
@@ -13,6 +22,19 @@ SequenceAlignment_NonParallel sequence_alignment_1(){
     int match_score = 5;
     int mismatch_score = -3;
     AlignmentType at = AlignmentType::LOCAL;
+    SequenceAlignment_NonParallel s_a(sequence_A, sequence_B, n, m, gap_penalty, match_score, mismatch_score, at);
+    return s_a;
+}
+
+SequenceAlignment_NonParallel sequence_alignment_2(){
+    char* sequence_A = "GACTTAC";
+    char* sequence_B = "CGTGAATTCAT";
+    int n = strlen(sequence_A);
+    int m = strlen(sequence_B);
+    int gap_penalty = 4;
+    int match_score = 5;
+    int mismatch_score = -3;
+    AlignmentType at = AlignmentType::GLOBAL;
     SequenceAlignment_NonParallel s_a(sequence_A, sequence_B, n, m, gap_penalty, match_score, mismatch_score, at);
     return s_a;
 }
@@ -61,19 +83,123 @@ bool test_traceback(){
     SequenceAlignment_NonParallel s_a = sequence_alignment_1();
     s_a.compute_alignment();
 
-    for (int i = 0; i < s_a.len_alignA; i++) {
+    char *expected_alignA = "GACTT-A";
+    char *expected_alignB = "GAATTCA";
+
+    for (unsigned int i = 0; i < s_a.len_alignA && i < 7; i++) {
+        if (s_a.alignA[i] != expected_alignA[i])
+            return false;
+    }
+    for (unsigned int i = 0; i < s_a.len_alignB, 7 && i < 7; i++) {
+        if (s_a.alignB[i] != expected_alignB[i])
+            return false;
+    }
+    return true;
+}
+
+bool test_traceback_global(){
+    SequenceAlignment_NonParallel s_a = sequence_alignment_2();
+    s_a.compute_alignment();
+
+    char *expected_alignA = "GACTT-A";
+    char *expected_alignB = "GAATTCA";
+
+    for (unsigned int i = 0; i < s_a.len_alignA && i < 7; i++) {
+        // if (s_a.alignA[i] != expected_alignA[i])
+        //     return false;
         std::cout<<s_a.alignA[i];
     }
     std::cout<<std::endl;
-    for (int i = 0; i < s_a.len_alignB; i++) {
+    for (unsigned int i = 0; i < s_a.len_alignB, 7 && i < 7; i++) {
+        // if (s_a.alignB[i] != expected_alignB[i])
+        //     return false;
         std::cout<<s_a.alignB[i];
     }
+    std::cout<<std::endl;
     return true;
 }
 
 //###################################################
 // Test functions of Parallel Version
 //##################################################
+
+SequenceAlignmentParallel *sequence_alignment_1_parallel1() {
+    char* sequence_A = "GACTTAC";
+    char* sequence_B = "CGTGAATTCAT";
+    int n = strlen(sequence_A);
+    int m = strlen(sequence_B);
+    int gap_penalty = 4;
+    int match_score = 5;
+    int mismatch_score = -3;
+    unsigned int num_threads = 1, block_size_x = 1, block_size_y = 1;
+    AlignmentType at = AlignmentType::LOCAL;
+    return new SequenceAlignmentParallel(sequence_A, sequence_B, n, m, 
+        num_threads, block_size_x, block_size_y, 
+        gap_penalty, match_score, mismatch_score, at
+    );
+}
+
+SequenceAlignmentParallel *sequence_alignment_1_parallel2() {
+    char* sequence_A = "GACTTAC";
+    char* sequence_B = "CGTGAATTCAT";
+    int n = strlen(sequence_A);
+    int m = strlen(sequence_B);
+    int gap_penalty = 4;
+    int match_score = 5;
+    int mismatch_score = -3;
+    unsigned int num_threads = 2, block_size_x = 2, block_size_y = 3;
+    AlignmentType at = AlignmentType::LOCAL;
+    return new SequenceAlignmentParallel(sequence_A, sequence_B, n, m, 
+        num_threads, block_size_x, block_size_y, 
+        gap_penalty, match_score, mismatch_score, at
+    );
+}
+
+SequenceAlignmentParallel *sequence_alignment_1_parallel3() {
+    char* sequence_A = "GACTTAC";
+    char* sequence_B = "CGTGAATTCAT";
+    int n = strlen(sequence_A);
+    int m = strlen(sequence_B);
+    int gap_penalty = 4;
+    int match_score = 5;
+    int mismatch_score = -3;
+    unsigned int num_threads = 3, block_size_x = 2, block_size_y = 3;
+    AlignmentType at = AlignmentType::LOCAL;
+    return new SequenceAlignmentParallel(sequence_A, sequence_B, n, m, 
+        num_threads, block_size_x, block_size_y, 
+        gap_penalty, match_score, mismatch_score, at
+    );
+}
+
+bool test_score_matrix_parallel(){
+    SequenceAlignment_NonParallel s_a_reference = sequence_alignment_1();
+    s_a_reference.compute_score_matrix();
+
+    SequenceAlignmentParallel *sap1, *sap2, *sap3;
+    sap1 = sequence_alignment_1_parallel1();
+    sap2 = sequence_alignment_1_parallel2();
+    sap3 = sequence_alignment_1_parallel3();
+
+    sap1->compute_score_matrix();
+    sap2->compute_score_matrix();
+    sap3->compute_score_matrix();
+    
+    for (int i = 0; i < s_a_reference.lenA+1; i++){
+        for (int j = 0; j < s_a_reference.lenB+1; j++){
+            if ((*s_a_reference.H)[i][j] != (*sap1->H)[i][j]){
+                return false;
+            }
+            if ((*s_a_reference.H)[i][j] != (*sap2->H)[i][j]){
+                return false;
+            }
+            if ((*s_a_reference.H)[i][j] != (*sap3->H)[i][j]){
+                return false;
+            }
+        }
+    }
+    
+    return true;
+}
 
 // bool test_cells_in_sequence_alignment(){
 //     char* sequence_A = "GACTTACTA";
@@ -162,17 +288,35 @@ int main(){
 
     if (test_score_matrix()){
         cout << "Test 1 passed!" << endl;
+    } else {
+        cout << "Test 1 failed :(" << endl;
     }
 
     if (test_find_indexes_max_score_cell()){
         cout << "Test 2 passed!" << endl;
+    } else {
+        cout << "Test 2 failed :(" << endl;
     }
 
     if (test_traceback()){
         cout << "Test 3 passed!" << endl;
+    } else {
+        cout << "Test 3 failed :(" << endl;
+    }
+
+    if (test_traceback_global()){
+        cout << "Test 4 passed!" << endl;
+    } else {
+        cout << "Test 4 failed :(" << endl;
     }
 
     std::cout << "Tests - Parallel Version" << "\n";
+
+    if (test_score_matrix_parallel()){
+        cout << "Test 5 passed!" << endl;
+    } else {
+        cout << "Test 5 failed :(" << endl;
+    }
 
     // if (test_cells_in_sequence_alignment()){
     //     std::cout << "Test 2 passed!" << "\n";
