@@ -70,6 +70,10 @@ void generate_size_vs_block_size_data() {
 }
 
 int main() {
+    std::cout<<"Sequence length vs threads data"<<std::endl;
+    generate_threads_vs_size_data();
+    std::cout<<std::endl;
+    std::cout<<"Sequence length vs block size data"<<std::endl;
     generate_size_vs_block_size_data();
 
     return 0;
