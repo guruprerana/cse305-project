@@ -47,8 +47,8 @@ SequenceAlignment_NonParallel::~SequenceAlignment_NonParallel() {
 
 void SequenceAlignment_NonParallel::compute_score_matrix() {
     //We compute the score Matrix
-    for (int i = 1; i < lenA+1; i++){
-        for (int j = 1; j < lenB+1; j++){
+    for (unsigned int i = 1; i < lenA+1; i++){
+        for (unsigned int j = 1; j < lenB+1; j++){
             compute_score_cell(i, j);
         }
     }

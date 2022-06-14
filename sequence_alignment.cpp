@@ -15,8 +15,8 @@ int SequenceAlignment::compute_match_score(char a_i, char b_j) {
 void SequenceAlignment::find_indexes_max_score_cell(unsigned int &k, unsigned int &l){
     //We find the LAST cell with the max score
     int maximum = 0;
-    for (int i = 0; i < lenA + 1; i++) {
-        for (int j = 0; j < lenB + 1; j++) {
+    for (unsigned int i = 0; i < lenA + 1; i++) {
+        for (unsigned int j = 0; j < lenB + 1; j++) {
             if ((*H)[i][j] > maximum){
                 maximum = (*H)[i][j];
                 k = i;

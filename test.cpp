@@ -58,8 +58,8 @@ bool test_score_matrix(){
         {0, 5, 1, 0, 0, 4, 5, 2, 9, 18, 14, 15}
     };
 
-    for (int i = 0; i < s_a.lenA+1; i++){
-        for (int j = 0; j < s_a.lenB+1; j++){
+    for (unsigned int i = 0; i < s_a.lenA+1; i++){
+        for (unsigned int j = 0; j < s_a.lenB+1; j++){
             if ((*s_a.H)[i][j] != H_exa[i][j]){
                 return false;
             }
@@ -74,8 +74,8 @@ bool test_find_indexes_max_score_cell(){
     s_a.compute_score_matrix();
     unsigned int k, l; //We initialize the coordinates
     s_a.find_indexes_max_score_cell(k, l);
-    int k_exa = 6;
-    int l_exa = 10;
+    unsigned int k_exa = 6;
+    unsigned int l_exa = 10;
     return (k == k_exa) && (l == l_exa); 
 }
 
@@ -90,7 +90,7 @@ bool test_traceback(){
         if (s_a.alignA[i] != expected_alignA[i])
             return false;
     }
-    for (unsigned int i = 0; i < s_a.len_alignB, 7 && i < 7; i++) {
+    for (unsigned int i = 0; i < s_a.len_alignB && i < 7; i++) {
         if (s_a.alignB[i] != expected_alignB[i])
             return false;
     }
@@ -181,8 +181,8 @@ bool test_score_matrix_parallel() {
     sap2->compute_score_matrix();
     sap3->compute_score_matrix();
     
-    for (int i = 0; i < s_a_reference.lenA+1; i++){
-        for (int j = 0; j < s_a_reference.lenB+1; j++){
+    for (unsigned int i = 0; i < s_a_reference.lenA+1; i++){
+        for (unsigned int j = 0; j < s_a_reference.lenB+1; j++){
             if ((*s_a_reference.H)[i][j] != (*sap1->H)[i][j]){
                 return false;
             }
@@ -197,87 +197,6 @@ bool test_score_matrix_parallel() {
     
     return true;
 }
-
-// bool test_cells_in_sequence_alignment(){
-//     char* sequence_A = "GACTTACTA";
-//     char* sequence_B = "CGTGAATTC";
-//     int n = strlen(sequence_A);
-//     int m = strlen(sequence_B);
-//     int gap_penalty = 4;
-//     int match_score = 5;
-//     int mismatch_score = -3;
-//     AlignmentType at = AlignmentType::LOCAL;
-//     SequenceAlignmentParallel s_a(sequence_A, sequence_B, 9, 9, 3, 1, 1, 2, 3, -5);
-//     std::vector<Block> blocks_thread1_phase7;
-//     s_a.phase = 7;
-//     s_a.cells(1, blocks_thread1_phase7, 7);
-
-//     std::vector<Block> expected_blocks_thread1_phase7;
-//     Block block1, block2, block3;
-//     block1.startX = 1;
-//     block1.startY = 7;
-//     block2.startX = 4;
-//     block2.startY = 4;
-//     block3.startX = 7;
-//     block3.startY = 1;
-//     expected_blocks_thread1_phase7.push_back(block1);
-//     expected_blocks_thread1_phase7.push_back(block2);
-//     expected_blocks_thread1_phase7.push_back(block3);
-
-
-//     for (int i = 0; i < blocks_thread1_phase7.size(); i++){
-//         bool test_1 = (blocks_thread1_phase7[i].startX == expected_blocks_thread1_phase7[i].startX);
-//         bool test_2 = (blocks_thread1_phase7[i].startY == expected_blocks_thread1_phase7[i].startY);
-//         if (!(test_1 and test_2)){
-//             return false;
-//         }
-//     }
-//     return true;
-// }
-
-// bool test_cells_in_sequence_alignment2() {
-//     char* sequence_A = "GACTTACTA";
-//     char* sequence_B = "CGTGAATTC";
-
-//     SequenceAlignment_NonParallel s_a2(sequence_A, sequence_B, 2000, 2000, 4, 3, 5, 2, 3, -5);
-//     std::vector<Block> blocks_thread2_phase7;
-//     s_a2.phase = 7;
-//     s_a2.cells(2, blocks_thread2_phase7, 7);
-
-//     std::vector<Block> expected_blocks_thread2_phase7;
-//     Block block1, block2;
-//     block1.startX = 4;
-//     block1.startY = 26;
-//     block2.startX = 16;
-//     block2.startY = 6;
-//     expected_blocks_thread2_phase7.push_back(block1);
-//     expected_blocks_thread2_phase7.push_back(block2);
-
-
-//     for (int i = 0; i < blocks_thread2_phase7.size(); i++){
-//         std::cout << blocks_thread2_phase7[i].startX << " " << blocks_thread2_phase7[i].startY << std::endl;
-//         bool test_1 = (blocks_thread2_phase7[i].startX == expected_blocks_thread2_phase7[i].startX);
-//         bool test_2 = (blocks_thread2_phase7[i].startY == expected_blocks_thread2_phase7[i].startY);
-//         if (!(test_1 and test_2)){
-//             return false;
-//         }
-//     }
-//     return true;
-// }
-
-// // bool test_parallel_sequence_alignment() {
-// //     char* A = "GACTTACTA";
-// //     char* B = "CGTGAATTC";
-
-// //     SequenceAlignment sa(A, B, 9, 9, 3, 3, 3, 2, 3, -5, AlignmentType::GLOBAL);
-// //     sa.compute_score_matrix();
-// //     // for (int i = 0; i < 10; i++) {
-// //     //     for (int j = 0; j < 10; j++) {
-// //     //         std::cout << (*(sa.H))[i][j] << " ";
-// //     //     }
-// //     //     std::cout << std::endl;
-// //     // }    
-// // }
 
 int main() {
 
@@ -314,16 +233,6 @@ int main() {
     } else {
         cout << "Test 5 failed :(" << endl;
     }
-
-    // if (test_cells_in_sequence_alignment()){
-    //     std::cout << "Test 2 passed!" << "\n";
-    // }
-
-    // if (test_cells_in_sequence_alignment2()){
-    //     std::cout << "Test 3 passed!" << "\n";
-    // }
-
-    // test_parallel_sequence_alignment();
 
     return 0;
 }

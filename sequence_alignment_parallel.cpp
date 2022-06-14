@@ -94,7 +94,7 @@ void SequenceAlignmentParallel::processor_compute(unsigned int processor_id) {
         }
 
         local_phase++;
-        int fetched = num_threads_finished.fetch_add(1);
+        unsigned int fetched = num_threads_finished.fetch_add(1);
         if (fetched == num_threads - 1) {
             int current_val = fetched + 1;
             while (!num_threads_finished.compare_exchange_weak(current_val, 0));
@@ -106,7 +106,7 @@ void SequenceAlignmentParallel::processor_compute(unsigned int processor_id) {
             continue;
         }
         std::unique_lock<std::mutex> lk(mutexes[processor_id - 1]);
-        while (phase != local_phase)
+        while (phase.load() != local_phase)
             cvs[processor_id - 1].wait(lk);
     }
 }

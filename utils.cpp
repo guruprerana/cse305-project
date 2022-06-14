@@ -19,8 +19,8 @@ int max_vector(std::vector<int> ints) {
 }
 
 void print_2d_vector(std::vector< std::vector<int> > H){
-    for (int i = 0; i < H.size(); i++){
-        for (int j = 0; j < H[i].size(); j++){
+    for (std::vector<std::vector<int>>::size_type i = 0; i < H.size(); i++){
+        for (std::vector<std::vector<int>>::size_type j = 0; j < H[i].size(); j++){
         std::cout << H[i][j] << " ";
         }
         std::cout << std::endl;
