@@ -28,5 +28,4 @@ benchmarker.o: benchmarker.cpp
 clean:
 	rm -f *.o
 	rm -f grader
-	rm main
-	rm test
+	rm main test benchmarker

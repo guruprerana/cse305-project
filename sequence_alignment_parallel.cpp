@@ -119,17 +119,6 @@ void SequenceAlignmentParallel::cells(unsigned int processor_id, std::vector<Blo
         std::cout << "Invalid : processor_id is greater than the number of threads.\n";
         return;
     }
-    // for (int i = (processor_id-1)*block_size_x; i < lenA + 1; i += (num_threads*block_size_x)){
-    //     //std::cout << "i = " << i << "\n";
-    //     int it = i/(num_threads*block_size_x);
-    //     //std::cout << "it = " << it << "\n";
-    //     int j = 1 + (phase.load() - 1 - it*num_threads) * block_size_y;
-    //     //std::cout << "j = " << j << "\n";
-    //     Block new_block;
-    //     new_block.startX = i;
-    //     new_block.startY = j;
-    //     blocks.push_back(new_block);
-    // }
 
     int i = 1 + (processor_id - 1) * block_size_x;
     int j = 1 + (phase - 1 - processor_id + 1) * block_size_y;
