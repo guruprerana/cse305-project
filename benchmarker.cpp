@@ -17,14 +17,25 @@ void generate_threads_vs_size_data() {
     read_file(fileA, A, 5083);
     read_file(fileB, B, 4779);
 
-    std::cout<<",";
     for (int size = 500; size < 2001; size += 500) {
-        std::cout<<size<<",";
+        std::cout<<","<<size;
+    }
+    std::cout<<std::endl;
+
+    // first do non-parallel for one thread
+    std::cout<<"1";
+    for (int size = 500; size < 2001; size += 500) {
+        SequenceAlignment_NonParallel sanp(A, B, size, size, 4, 5, -3);
+        auto start = std::chrono::steady_clock::now();
+        sanp.compute_score_matrix();
+        auto finish = std::chrono::steady_clock::now();
+        auto elapsed = std::chrono::duration_cast<std::chrono::microseconds>(finish - start).count();
+        std::cout<<","<<elapsed;
     }
     std::cout<<std::endl;
 
     for (int thread = 2; thread < 11; thread++) {
-        std::cout<<thread<<",";
+        std::cout<<thread;
         for (int size = 500; size < 2001; size += 500) {
             SequenceAlignmentParallel sap(A, B, size, size, thread, 25, 25, 4, 5, -3);
 
@@ -32,7 +43,7 @@ void generate_threads_vs_size_data() {
             sap.compute_score_matrix();
             auto finish = std::chrono::steady_clock::now();
             auto elapsed = std::chrono::duration_cast<std::chrono::microseconds>(finish - start).count();
-            std::cout<<elapsed<<",";
+            std::cout<<","<<elapsed;
         }
         std::cout<<std::endl;
     }
@@ -47,14 +58,13 @@ void generate_size_vs_block_size_data() {
     read_file(fileA, A, 5083);
     read_file(fileB, B, 4779);
 
-    std::cout<<",";
     for (int size = 500; size < 2001; size += 500) {
-        std::cout<<size<<",";
+        std::cout<<","<<size;
     }
     std::cout<<std::endl;
 
     for (int block_size = 10; block_size < 151; block_size += 10) {
-        std::cout<<block_size<<",";
+        std::cout<<block_size;
         for (int size = 500; size < 2001; size += 500) {
             SequenceAlignmentParallel sap(A, B, size, size, 8, block_size, block_size, 4, 5, -3);
 
@@ -62,7 +72,7 @@ void generate_size_vs_block_size_data() {
             sap.compute_score_matrix();
             auto finish = std::chrono::steady_clock::now();
             auto elapsed = std::chrono::duration_cast<std::chrono::microseconds>(finish - start).count();
-            std::cout<<elapsed<<",";
+            std::cout<<","<<elapsed;
         }
         std::cout<<std::endl;
     }

@@ -6,7 +6,7 @@ SEQUENCE_ALIGNMENT_FILES = sequence_alignment.hpp sequence_alignment.cpp sequenc
 all: main.o $(SEQUENCE_ALIGNMENT_FILES)
 	$(CXX) $(CFLAGS) -o main main.o
 
-main.o: main.cpp
+main.o: main.cpp $(SEQUENCE_ALIGNMENT_FILES)
 	$(CXX) -c $(CFLAGS) -o main.o main.cpp
 
 TEST_OBJECTS = test.o
@@ -14,7 +14,7 @@ TEST_OBJECTS = test.o
 test: $(TEST_OBJECTS) $(SEQUENCE_ALIGNMENT_FILES)
 	$(CXX) $(CFLAGS) -o test $(TEST_OBJECTS) -latomic
 
-test.o: test.cpp
+test.o: test.cpp $(SEQUENCE_ALIGNMENT_FILES)
 	$(CXX) -c $(CFLAGS) -o test.o test.cpp -I.
 
 BENCHMARKER_OBJECTS = benchmarker.o
@@ -22,7 +22,7 @@ BENCHMARKER_OBJECTS = benchmarker.o
 benchmarker: $(BENCHMARKER_OBJECTS) $(SEQUENCE_ALIGNMENT_FILES)
 	$(CXX) $(CFLAGS) -o benchmarker $(BENCHMARKER_OBJECTS) -latomic
 
-benchmarker.o: benchmarker.cpp
+benchmarker.o: benchmarker.cpp $(SEQUENCE_ALIGNMENT_FILES)
 	$(CXX) -c $(CFLAGS) -o benchmarker.o benchmarker.cpp -I.
 
 clean:
