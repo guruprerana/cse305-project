@@ -84,7 +84,7 @@ public:
 
     std::atomic_int num_threads_finished;
     std::atomic_int phase;
-    unsigned int num_phases;
+    int num_phases;
 
     SequenceAlignmentParallel(
         char *A, char *B, 

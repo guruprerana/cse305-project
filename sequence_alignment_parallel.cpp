@@ -79,7 +79,7 @@ void SequenceAlignmentParallel::compute_score_matrix() {
 }
 
 void SequenceAlignmentParallel::processor_compute(unsigned int processor_id) {
-    unsigned int local_phase = 1;
+    int local_phase = 1;
     while (local_phase <= num_phases) {
         std::vector<Block> blocks_to_compute;
         cells(processor_id, blocks_to_compute, local_phase);
@@ -123,7 +123,7 @@ void SequenceAlignmentParallel::cells(unsigned int processor_id, std::vector<Blo
     int i = 1 + (processor_id - 1) * block_size_x;
     int j = 1 + (phase - 1 - processor_id + 1) * block_size_y;
 
-    while (i < lenA + 1 && j >= 1) {
+    while (i < (int) lenA + 1 && j >= 1) {
         Block new_block;
         new_block.startX = i;
         new_block.startY = j;
@@ -133,7 +133,7 @@ void SequenceAlignmentParallel::cells(unsigned int processor_id, std::vector<Blo
         j -= num_threads * block_size_y;
     }
 
-    if (i < lenA + 1 && j >= 1) {
+    if (i < (int) lenA + 1 && j >= 1) {
         Block new_block;
         new_block.startX = i;
         new_block.startY = j;
