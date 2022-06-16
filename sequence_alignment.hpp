@@ -44,12 +44,48 @@ public:
     std::vector<std::vector<int> > *H;
     std::vector<std::vector<TracebackDirection> > *traceback_matrix;
 
+    /**
+     * Computes the score matrix H and and the traceback matrix T and updates the class attributes H and traceback_matrix.
+     */
     virtual void compute_score_matrix() {};
 
+    /**
+     * Computes the match/mismatch score of a cell.
+     *
+     * @param a_i : ith residue of the sequence A.
+     * @param b_j : jth residue of the sequence B.
+     * @return int value evaluating match score.
+     */
     int compute_match_score(char a_i, char b_j);
+
+    /**
+     * Computes the indexes of the score with the maximum score and store them in the referenced parameters.
+     *
+     * @param k referenced unsigned integer to store the row index of the max score cell.
+     * @param l referenced unsigned integer to store the column index of the max score cell.
+     */
     void find_indexes_max_score_cell(unsigned int &k, unsigned int &l);
+
+    /**
+     * Computes the score of a cell.
+     *
+     * @param i row index of the cell.
+     * @param j column index of the cell.
+     */
     void compute_score_cell(unsigned int i, unsigned int j);
+
+    /**
+     * Computes the optimal alignment from the traceback matrix and updates the alignA and alignB class attributes.
+     *
+     * @param i row index on where to start the traceback.
+     * @param j column index on where to start the traceback.
+     */
     void traceback(unsigned int i, unsigned int j);
+
+    /**
+     * Computes the optimal alignment of a SequenceAlignment Object.
+     *
+     */
     void compute_alignment();
 };
 
@@ -96,7 +132,22 @@ public:
     ~SequenceAlignmentParallel();
 
     void compute_score_matrix();
+
+    /**
+     * Computes all the cells for a given processor.
+     * 
+     * @param processor_id the processor id.
+     */
     void processor_compute(unsigned int processor_id);
+
+    /**
+     * Computes the first cell of each block that will be computed 
+     * by a processor for a given phase.
+     *
+     * @param processor_id the processor id.
+     * @param blocks a referenced vector of blocks to return the computed cells inside.
+     * @param phase the numbered phase.
+     */
     void cells(unsigned int processor_id, std::vector<Block> &blocks, unsigned int phase);
 };
 
